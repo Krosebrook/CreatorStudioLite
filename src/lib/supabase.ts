@@ -3,21 +3,30 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please connect to Supabase using the button in the top right.');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
+// Create a mock client if environment variables are not set
+const createSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your_supabase_url_here') {
+    console.warn('Supabase not configured. Please connect to Supabase using the button in the top right.');
+    return null;
   }
-});
+  
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
+  });
+};
+
+export const supabase = createSupabaseClient();
 
 // Auth helper functions
 export const authHelpers = {
   signUp: async (email: string, password: string, userData?: any) => {
+    if (!supabase) {
+      return { data: null, error: { message: 'Supabase not configured. Please connect to Supabase.' } };
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
