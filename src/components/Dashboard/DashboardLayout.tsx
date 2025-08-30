@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { cn } from '../../design-system/utils/cn';
 import { Button } from '../../design-system/components/Button';
 import { Card } from '../../design-system/components/Card';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   Menu, 
   X, 
@@ -52,6 +53,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children, 
   currentPage = 'dashboard' 
 }) => {
+  const { user, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -291,6 +293,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         <div>
                           <p className="font-semibold text-neutral-900">Sarah Chen</p>
                           <p className="text-sm text-neutral-600">@sarahcreates</p>
+                          <p className="text-sm text-neutral-600">{user?.email}</p>
                           <div className="flex items-center space-x-1 mt-1">
                             <Crown className="w-3 h-3 text-warning-500" />
                             <span className="text-xs text-warning-600 font-medium">Pro Plan</span>
@@ -326,7 +329,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     </div>
                     
                     <div className="border-t border-neutral-200 p-2">
-                      <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-error-50 text-error-600 transition-colors">
+                      <button 
+                        onClick={() => signOut()}
+                        className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-error-50 text-error-600 transition-colors"
+                      >
                         <LogOut className="w-4 h-4" />
                         <span className="text-sm">Sign Out</span>
                       </button>
