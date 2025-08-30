@@ -1,5 +1,5 @@
 /**
- * FlashFusion Design Tokens
+ * Amplify Design Tokens
  * Creator-focused design system with 20-year UX expertise
  * Mobile-first, workflow-optimized token system
  */

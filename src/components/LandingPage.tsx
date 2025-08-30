@@ -101,6 +101,7 @@ const testimonials: Testimonial[] = [
     company: "@sarahliveswell",
     avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150",
     content: "FlashFusion transformed my content strategy. I went from 10K to 500K followers in 6 months, and my revenue increased by 400%. The AI suggestions are incredibly accurate.",
+    content: "Amplify transformed my content strategy. I went from 10K to 500K followers in 6 months, and my revenue increased by 400%. The AI suggestions are incredibly accurate.",
     metrics: {
       growth: "+5000%",
       revenue: "$50K/month",
@@ -114,6 +115,7 @@ const testimonials: Testimonial[] = [
     company: "@techwithmarcus",
     avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150",
     content: "The analytics dashboard is a game-changer. I can see exactly which content performs best across all platforms and optimize in real-time. My engagement rate doubled.",
+    content: "Amplify's analytics dashboard is a game-changer. I can see exactly which content performs best across all platforms and optimize in real-time. My engagement rate doubled.",
     metrics: {
       growth: "+200%",
       revenue: "$25K/month",
@@ -127,6 +129,7 @@ const testimonials: Testimonial[] = [
     company: "@emmastyle",
     avatar: "https://images.pexels.com/photos/3992656/pexels-photo-3992656.jpeg?auto=compress&cs=tinysrgb&w=150",
     content: "Brand partnerships became so much easier to manage. FlashFusion's marketplace connected me with premium brands, and I'm earning 3x more per collaboration.",
+    content: "Brand partnerships became so much easier to manage. Amplify's marketplace connected me with premium brands, and I'm earning 3x more per collaboration.",
     metrics: {
       growth: "+300%",
       revenue: "$75K/month",
@@ -288,7 +291,7 @@ export const LandingPage: React.FC = () => {
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                FlashFusion
+                Amplify
               </span>
             </div>
 
@@ -399,7 +402,7 @@ export const LandingPage: React.FC = () => {
               {/* Badge */}
               <div className="inline-flex items-center space-x-2 bg-primary-100 text-primary-800 px-4 py-2 rounded-full text-sm font-medium">
                 <Sparkles className="w-4 h-4" />
-                <span>AI-Powered Creator Platform</span>
+                <span>Amplify Your Content</span>
                 <div className="w-2 h-2 bg-success-500 rounded-full animate-pulse" />
               </div>
 
@@ -407,31 +410,31 @@ export const LandingPage: React.FC = () => {
               <div className="space-y-4">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
                   <span className="bg-gradient-to-r from-neutral-900 via-primary-800 to-primary-600 bg-clip-text text-transparent">
-                    Create. Publish. 
+                    Create. Amplify.
                   </span>
                   <br />
                   <span className="bg-gradient-to-r from-primary-600 to-success-600 bg-clip-text text-transparent">
-                    Earn More.
+                    Grow Faster.
                   </span>
                 </h1>
                 <p className="text-xl text-neutral-600 leading-relaxed max-w-2xl">
-                  The all-in-one platform that helps creators generate viral content, 
-                  publish across all platforms, and maximize revenue with AI-powered insights.
+                  Amplify your reach with AI-powered content creation, cross-platform publishing, 
+                  and data-driven growth strategies that turn followers into revenue.
                 </p>
               </div>
 
               {/* Stats */}
               <div className="flex flex-wrap gap-8">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary-600">500K+</div>
+                  <div className="text-3xl font-bold text-primary-600">2M+</div>
                   <div className="text-sm text-neutral-600">Active Creators</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-success-600">$50M+</div>
+                  <div className="text-3xl font-bold text-success-600">$250M+</div>
                   <div className="text-sm text-neutral-600">Creator Revenue</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-warning-600">10B+</div>
+                  <div className="text-3xl font-bold text-warning-600">50B+</div>
                   <div className="text-sm text-neutral-600">Content Views</div>
                 </div>
               </div>
@@ -554,11 +557,11 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              Everything you need to succeed as a creator
+              Everything creators need to amplify their success
             </h2>
             <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
-              From AI-powered content generation to advanced analytics and revenue optimization, 
-              FlashFusion provides all the tools you need in one platform.
+              AI-powered content creation, cross-platform publishing, advanced analytics, and revenue optimization - 
+              all the tools you need to amplify your creator business.
             </p>
           </div>
 
@@ -597,10 +600,10 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              Loved by creators worldwide
+              Trusted by 2M+ creators worldwide
             </h2>
             <p className="text-xl text-neutral-600">
-              See how FlashFusion is transforming creator businesses
+              See how Amplify is transforming creator businesses
             </p>
           </div>
 
@@ -730,10 +733,10 @@ export const LandingPage: React.FC = () => {
       <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Ready to transform your creator business?
+            Ready to amplify your creator business?
           </h2>
           <p className="text-xl text-primary-100 mb-8">
-            Join 500,000+ creators who are already earning more with FlashFusion
+            Join 2M+ creators who are already growing faster with Amplify
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -766,10 +769,10 @@ export const LandingPage: React.FC = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold">FlashFusion</span>
+                <span className="text-xl font-bold">Amplify</span>
               </div>
               <p className="text-neutral-400">
-                Empowering creators to build successful businesses with AI-powered tools and insights.
+                © 2025 Amplify. All rights reserved.
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="text-neutral-400 hover:text-white transition-colors">

@@ -127,9 +127,9 @@ export const MetricsOverview: React.FC = () => {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((metric, index) => (
-          <div key={index} className="space-y-2">
+          <div key={index} className="space-y-1">
             <p className="text-sm font-medium text-neutral-600">{metric.label}</p>
-            <p className="text-2xl font-bold text-neutral-900">{metric.value}</p>
+            <p className="text-3xl font-bold text-neutral-900">{metric.value}</p>
             <div className="flex items-center space-x-1">
               {metric.trend === 'up' ? (
                 <TrendingUp className="w-4 h-4 text-success-500" />
@@ -147,7 +147,6 @@ export const MetricsOverview: React.FC = () => {
                 {metric.change}
               </span>
             </div>
-            <p className="text-xs text-neutral-500">{metric.period}</p>
           </div>
         ))}
       </div>
@@ -256,15 +255,15 @@ export const RecentContent: React.FC = () => {
         {content.map((item) => (
           <div
             key={item.id}
-            className="flex items-center space-x-4 p-3 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer"
+            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer"
           >
             <div className="relative">
               <img
                 src={item.thumbnail}
                 alt={item.title}
-                className="w-16 h-16 rounded-lg object-cover"
+                className="w-12 h-12 rounded-lg object-cover"
               />
-              <div className="absolute -bottom-1 -right-1 p-1 bg-white rounded-full shadow-sm">
+              <div className="absolute -bottom-1 -right-1 p-0.5 bg-white rounded-full shadow-sm">
                 {getPlatformIcon(item.platform)}
               </div>
             </div>
@@ -355,7 +354,7 @@ export const RevenueWidget: React.FC = () => {
       </div>
 
       {/* Total Revenue */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-baseline space-x-2">
           <span className="text-3xl font-bold text-neutral-900">
             ${totalRevenue.toLocaleString()}
@@ -367,7 +366,6 @@ export const RevenueWidget: React.FC = () => {
             </span>
           </div>
         </div>
-        <p className="text-sm text-neutral-600">Total revenue this {period}</p>
       </div>
 
       {/* Revenue Breakdown */}
@@ -385,13 +383,13 @@ export const RevenueWidget: React.FC = () => {
         {showBreakdown && (
           <div className="space-y-2">
             {revenueStreams.map((stream, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+              <div key={index} className="flex items-center justify-between p-2 bg-neutral-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className={cn('p-2 rounded-lg text-white', stream.color)}>
+                  <div className={cn('p-1.5 rounded text-white', stream.color)}>
                     {stream.icon}
                   </div>
                   <div>
-                    <p className="font-medium text-neutral-900">{stream.source}</p>
+                    <p className="text-sm font-medium text-neutral-900">{stream.source}</p>
                     <div className="flex items-center space-x-1">
                       {stream.change > 0 ? (
                         <TrendingUp className="w-3 h-3 text-success-500" />
@@ -407,7 +405,7 @@ export const RevenueWidget: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <span className="font-semibold text-neutral-900">
+                <span className="text-sm font-semibold text-neutral-900">
                   ${stream.amount.toLocaleString()}
                 </span>
               </div>
@@ -473,18 +471,15 @@ export const AIInsights: React.FC = () => {
         {insights.map((insight, index) => (
           <div
             key={index}
-            className={cn(
-              'p-4 border-l-4 rounded-lg transition-all duration-200 hover:shadow-sm',
-              getPriorityColor(insight.priority)
-            )}
+            className={cn('p-3 border-l-4 rounded-lg transition-all duration-200 hover:shadow-sm', getPriorityColor(insight.priority))}
           >
-            <div className="flex items-start justify-between">
+            <div className="flex items-center justify-between">
               <div className="flex items-start space-x-3">
-                <div className="p-2 bg-white rounded-lg shadow-sm">
+                <div className="p-1.5 bg-white rounded shadow-sm">
                   {insight.icon}
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium text-neutral-900">{insight.title}</h4>
+                  <h4 className="text-sm font-medium text-neutral-900">{insight.title}</h4>
                   <p className="text-sm text-neutral-600 mt-1">{insight.message}</p>
                 </div>
               </div>
@@ -546,31 +541,17 @@ export const QuickActions: React.FC = () => {
         {actions.map((action, index) => (
           <button
             key={index}
-            className={cn(
-              'p-4 rounded-lg text-white transition-all duration-200 hover:scale-105 hover:shadow-lg group',
-              action.color
-            )}
+           className={cn('p-3 rounded-lg text-white transition-all duration-200 hover:scale-105 hover:shadow-lg group', action.color)}
             title={`${action.description} (${action.shortcut})`}
           >
-            <div className="flex flex-col items-center space-y-2">
+           <div className="flex flex-col items-center space-y-1">
               {action.icon}
               <span className="text-sm font-medium">{action.label}</span>
-              <span className="text-xs opacity-75 group-hover:opacity-100 transition-opacity">
-                {action.shortcut}
-              </span>
             </div>
           </button>
         ))}
       </div>
       
-      <div className="mt-4 pt-4 border-t border-neutral-200">
-        <div className="text-center">
-          <p className="text-xs text-neutral-500 mb-2">Pro Tip</p>
-          <p className="text-sm text-neutral-700">
-            Use keyboard shortcuts to speed up your workflow
-          </p>
-        </div>
-      </div>
     </Card>
   );
 };
@@ -641,27 +622,27 @@ export const PlatformStatus: React.FC = () => {
 
       <div className="space-y-4">
         {platforms.map((platform, index) => (
-          <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-neutral-50 transition-colors">
+         <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-50 transition-colors">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className={cn('p-2 rounded-lg bg-neutral-100', platform.color)}>
+               <div className={cn('p-1.5 rounded bg-neutral-100', platform.color)}>
                   {platform.icon}
                 </div>
                 <div className={cn(
-                  'absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white',
+                 'absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-white',
                   getStatusColor(platform.status)
                 )} />
               </div>
               
               <div>
-                <p className="font-medium text-neutral-900">{platform.name}</p>
+               <p className="text-sm font-medium text-neutral-900">{platform.name}</p>
                 <p className="text-xs text-neutral-500">{platform.lastSync}</p>
               </div>
             </div>
             
             {platform.connected ? (
               <div className="text-right">
-                <p className="text-sm font-medium text-neutral-900">{platform.followers}</p>
+               <p className="text-sm font-semibold text-neutral-900">{platform.followers}</p>
                 <p className="text-xs text-neutral-500">{platform.engagement} engagement</p>
               </div>
             ) : (
@@ -716,18 +697,18 @@ export const UpcomingSchedule: React.FC = () => {
 
       <div className="space-y-3">
         {scheduledContent.map((item) => (
-          <div key={item.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-neutral-50 transition-colors">
+         <div key={item.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-neutral-50 transition-colors">
             <div className="flex-shrink-0">
-              <div className="w-3 h-3 bg-primary-500 rounded-full" />
+             <div className="w-2 h-2 bg-primary-500 rounded-full" />
             </div>
             
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-neutral-900 truncate">{item.title}</p>
+             <p className="text-sm font-medium text-neutral-900 truncate">{item.title}</p>
               <div className="flex items-center space-x-2 mt-1">
                 <span className="text-xs text-neutral-500 capitalize">{item.platform}</span>
                 <span className="text-xs text-neutral-400">•</span>
                 <span className="text-xs text-neutral-500">
-                  {item.scheduledFor.toLocaleDateString()} at {item.scheduledFor.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                 {item.scheduledFor.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>
@@ -776,10 +757,10 @@ export const TrendingTopics: React.FC = () => {
 
       <div className="space-y-3">
         {trends.map((trend, index) => (
-          <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer">
+         <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer">
             <div className="flex-1">
               <div className="flex items-center space-x-2">
-                <p className="font-medium text-neutral-900">{trend.topic}</p>
+               <p className="text-sm font-medium text-neutral-900">{trend.topic}</p>
                 <span className={cn(
                   'text-xs px-2 py-1 rounded-full font-medium',
                   trend.difficulty === 'Easy' && 'bg-success-100 text-success-700',

@@ -348,7 +348,7 @@ export const ContentStudio: React.FC = () => {
     <DashboardLayout currentPage="create">
       <div className="space-y-6">
         {/* Studio Header */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-3 mb-8">
           <h1 className="text-3xl font-bold text-neutral-900">Content Creation Studio</h1>
           <p className="text-neutral-600 max-w-2xl mx-auto">
             Create, edit, and publish amazing content across all your platforms with AI-powered tools
@@ -356,12 +356,12 @@ export const ContentStudio: React.FC = () => {
         </div>
 
         {/* Mode Selection */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {studioModes.map(mode => (
             <Card
               key={mode.id}
               className={cn(
-                'cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1',
+                'cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5',
                 activeMode === mode.id && 'ring-2 ring-primary-500 bg-primary-50'
               )}
               onClick={() => {
@@ -369,15 +369,15 @@ export const ContentStudio: React.FC = () => {
                 createNewProject(mode.id);
               }}
             >
-              <div className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4 text-primary-600">
+              <div className="p-4 text-center">
+                <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-3 text-primary-600">
                   {mode.icon}
                 </div>
-                <h3 className="font-semibold text-neutral-900 mb-2">{mode.name}</h3>
-                <p className="text-sm text-neutral-600 mb-3">{mode.description}</p>
-                <div className="space-y-1">
+                <h3 className="font-semibold text-neutral-900 mb-1">{mode.name}</h3>
+                <p className="text-xs text-neutral-600 mb-2">{mode.description}</p>
+                <div className="space-y-0.5">
                   {mode.features.map((feature, index) => (
-                    <div key={index} className="flex items-center space-x-2 text-xs text-neutral-500">
+                    <div key={index} className="flex items-center justify-center space-x-1 text-xs text-neutral-500">
                       <Check className="w-3 h-3 text-success-500" />
                       <span>{feature}</span>
                     </div>
@@ -389,21 +389,21 @@ export const ContentStudio: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <Button
             variant="primary"
             onClick={() => setShowCamera(true)}
             leftIcon={<Camera className="w-5 h-5" />}
-            className="h-16 text-lg"
+            className="h-14"
           >
-            Take Photo/Video
+            Capture
           </Button>
           
           <Button
             variant="secondary"
             onClick={() => setShowAIGenerator(true)}
             leftIcon={<Sparkles className="w-5 h-5" />}
-            className="h-16 text-lg"
+            className="h-14"
           >
             AI Generate
           </Button>
@@ -411,17 +411,17 @@ export const ContentStudio: React.FC = () => {
           <Button
             variant="secondary"
             leftIcon={<Upload className="w-5 h-5" />}
-            className="h-16 text-lg"
+            className="h-14"
           >
-            Upload Media
+            Upload
           </Button>
           
           <Button
             variant="secondary"
             leftIcon={<FileText className="w-5 h-5" />}
-            className="h-16 text-lg"
+            className="h-14"
           >
-            Text Post
+            Text
           </Button>
         </div>
 
@@ -435,11 +435,11 @@ export const ContentStudio: React.FC = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {projects.map(project => (
                 <Card
                   key={project.id}
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+                  className="cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
                   onClick={() => {
                     setCurrentProject(project);
                     setIsEditing(true);
@@ -454,22 +454,22 @@ export const ContentStudio: React.FC = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <FileText className="w-12 h-12 text-neutral-400" />
+                        <FileText className="w-8 h-8 text-neutral-400" />
                       </div>
                     )}
                   </div>
                   
-                  <div className="p-4">
+                  <div className="p-3">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-neutral-900 truncate flex-1">
+                      <h3 className="text-sm font-semibold text-neutral-900 truncate flex-1">
                         {project.title}
                       </h3>
-                      <button className="ml-2 p-1 hover:bg-neutral-100 rounded">
+                      <button className="ml-1 p-0.5 hover:bg-neutral-100 rounded">
                         <MoreHorizontal className="w-4 h-4 text-neutral-400" />
                       </button>
                     </div>
                     
-                    <div className="flex items-center space-x-2 mb-3">
+                    <div className="flex items-center space-x-2 mb-2">
                       <span className={cn(
                         'text-xs px-2 py-1 rounded-full font-medium capitalize',
                         getStatusColor(project.status)
@@ -484,7 +484,7 @@ export const ContentStudio: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex space-x-1">
                         {project.platforms.map(platform => (
-                          <div key={platform} className="w-6 h-6 flex items-center justify-center">
+                          <div key={platform} className="w-5 h-5 flex items-center justify-center">
                             {getPlatformIcon(platform)}
                           </div>
                         ))}
@@ -501,18 +501,18 @@ export const ContentStudio: React.FC = () => {
         )}
 
         {/* Platform Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { platform: 'Instagram', followers: '125K', engagement: '8.7%', icon: <Instagram className="w-5 h-5 text-pink-500" /> },
             { platform: 'TikTok', followers: '89K', engagement: '12.3%', icon: <div className="w-5 h-5 bg-black rounded-sm" /> },
             { platform: 'YouTube', followers: '45K', engagement: '6.2%', icon: <Youtube className="w-5 h-5 text-red-500" /> },
             { platform: 'Twitter', followers: '23K', engagement: '4.1%', icon: <Twitter className="w-5 h-5 text-blue-500" /> }
           ].map((stat, index) => (
-            <Card key={index} className="p-4 text-center hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-center mb-2">
+            <Card key={index} className="p-3 text-center hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-center mb-1">
                 {stat.icon}
               </div>
-              <p className="font-semibold text-neutral-900">{stat.platform}</p>
+              <p className="text-sm font-semibold text-neutral-900">{stat.platform}</p>
               <p className="text-sm text-neutral-600">{stat.followers} followers</p>
               <p className="text-xs text-success-600">{stat.engagement} engagement</p>
             </Card>

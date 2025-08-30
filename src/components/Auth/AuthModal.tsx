@@ -219,7 +219,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <Sparkles className="w-6 h-6 text-primary-500" />
                 <h3 className="text-xl font-bold text-neutral-900">
                   {mode === 'signin' && 'Welcome Back'}
-                  {mode === 'signup' && 'Join FlashFusion'}
+                  {mode === 'signup' && 'Join Amplify'}
                   {mode === 'forgot-password' && 'Reset Password'}
                   {mode === 'user-type' && 'Tell us about yourself'}
                   {mode === 'success' && 'Success!'}
@@ -297,7 +297,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {mode === 'signin' && (
             <form onSubmit={handleSignIn} className="space-y-4">
               <p className="text-neutral-600 text-center">
-                Sign in to your FlashFusion account
+                Sign in to your Amplify account
               </p>
 
               <Input
@@ -411,7 +411,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 value={formData.username}
                 onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
                 placeholder="sarahcreates"
-                description="This will be your unique FlashFusion handle"
+                description="This will be your unique Amplify handle"
                 required
                 autoComplete="username"
               />
@@ -505,7 +505,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="text-center mb-4">
                 <p className="text-neutral-600">
-                  Enter your email address and we'll send you a link to reset your password
+                  Enter your email and we'll send you a password reset link
                 </p>
               </div>
 
@@ -558,7 +558,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
               <div>
                 <h4 className="text-xl font-semibold text-neutral-900 mb-2">
-                  {success.includes('reset') ? 'Check Your Email' : 'Welcome to FlashFusion!'}
+                  {success.includes('reset') ? 'Check Your Email' : 'Welcome to Amplify!'}
                 </h4>
                 <p className="text-neutral-600">{success}</p>
               </div>

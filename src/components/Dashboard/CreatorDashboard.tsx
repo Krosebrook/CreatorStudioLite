@@ -139,18 +139,17 @@ export const CreatorDashboard: React.FC = () => {
     <DashboardLayout currentPage="dashboard">
       <div className="space-y-6">
         {/* Welcome Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-neutral-900">
               {getGreeting()}, Sarah! 👋
             </h1>
             <p className="text-neutral-600 mt-1">
-              Your content is performing {creatorStats.growthRate > 10 ? 'exceptionally well' : 'well'} this week. 
-              Keep up the great work!
+              Your content is up {creatorStats.growthRate}% this week. Revenue goal: 78% complete.
             </p>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-3">
             <Button
               variant={isCustomizing ? 'primary' : 'ghost'}
               onClick={() => setIsCustomizing(!isCustomizing)}
@@ -165,66 +164,74 @@ export const CreatorDashboard: React.FC = () => {
         </div>
 
         {/* Key Stats Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Card className="p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-600">Total Followers</p>
-                <p className="text-2xl font-bold text-neutral-900">
-                  {(creatorStats.totalFollowers / 1000).toFixed(0)}K
-                </p>
-                <div className="flex items-center space-x-1 mt-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Users className="w-6 h-6 text-primary-500" />
+                <div className="flex items-center space-x-1">
                   <TrendingUp className="w-3 h-3 text-success-500" />
                   <span className="text-xs text-success-600 font-medium">+{creatorStats.growthRate}%</span>
                 </div>
               </div>
-              <Users className="w-8 h-8 text-primary-500" />
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Followers</p>
+                <p className="text-3xl font-bold text-neutral-900">
+                  {(creatorStats.totalFollowers / 1000).toFixed(0)}K
+                </p>
+              </div>
             </div>
           </Card>
 
           <Card className="p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-600">Total Views</p>
-                <p className="text-2xl font-bold text-neutral-900">
-                  {(creatorStats.totalViews / 1000000).toFixed(1)}M
-                </p>
-                <div className="flex items-center space-x-1 mt-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Eye className="w-6 h-6 text-primary-500" />
+                <div className="flex items-center space-x-1">
                   <TrendingUp className="w-3 h-3 text-success-500" />
                   <span className="text-xs text-success-600 font-medium">+12.5%</span>
                 </div>
               </div>
-              <Eye className="w-8 h-8 text-primary-500" />
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Views</p>
+                <p className="text-3xl font-bold text-neutral-900">
+                  {(creatorStats.totalViews / 1000000).toFixed(1)}M
+                </p>
+              </div>
             </div>
           </Card>
 
           <Card className="p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-600">Monthly Revenue</p>
-                <p className="text-2xl font-bold text-neutral-900">
-                  ${(creatorStats.totalRevenue / 1000).toFixed(1)}K
-                </p>
-                <div className="flex items-center space-x-1 mt-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <DollarSign className="w-6 h-6 text-success-500" />
+                <div className="flex items-center space-x-1">
                   <TrendingUp className="w-3 h-3 text-success-500" />
                   <span className="text-xs text-success-600 font-medium">+24.7%</span>
                 </div>
               </div>
-              <DollarSign className="w-8 h-8 text-success-500" />
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Monthly Revenue</p>
+                <p className="text-3xl font-bold text-neutral-900">
+                  ${(creatorStats.totalRevenue / 1000).toFixed(1)}K
+                </p>
+              </div>
             </div>
           </Card>
 
           <Card className="p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-neutral-600">Engagement Rate</p>
-                <p className="text-2xl font-bold text-neutral-900">{creatorStats.engagementRate}%</p>
-                <div className="flex items-center space-x-1 mt-1">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Heart className="w-6 h-6 text-error-500" />
+                <div className="flex items-center space-x-1">
                   <TrendingUp className="w-3 h-3 text-success-500" />
                   <span className="text-xs text-success-600 font-medium">+2.1%</span>
                 </div>
               </div>
-              <Heart className="w-8 h-8 text-error-500" />
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Engagement Rate</p>
+                <p className="text-3xl font-bold text-neutral-900">{creatorStats.engagementRate}%</p>
+              </div>
             </div>
           </Card>
         </div>
@@ -255,7 +262,7 @@ export const CreatorDashboard: React.FC = () => {
         )}
 
         {/* Widget Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {widgets.map((widget) => {
             const WidgetComponent = widget.component;
             return (
@@ -285,15 +292,15 @@ export const CreatorDashboard: React.FC = () => {
           
           {/* Add Widget Button */}
           {isCustomizing && (
-            <Card className="p-6 border-2 border-dashed border-neutral-300 hover:border-primary-400 transition-colors cursor-pointer">
+            <Card className="p-4 border-2 border-dashed border-neutral-300 hover:border-primary-400 transition-colors cursor-pointer">
               <div className="text-center">
-                <Plus className="w-8 h-8 text-neutral-400 mx-auto mb-3" />
-                <h3 className="font-medium text-neutral-700 mb-2">Add Widget</h3>
-                <div className="space-y-2">
+                <Plus className="w-6 h-6 text-neutral-400 mx-auto mb-2" />
+                <h3 className="font-medium text-neutral-700 mb-3">Add Widget</h3>
+                <div className="space-y-1">
                   {availableWidgets.map((widget) => (
                     <button
                       key={widget.id}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                      className="w-full flex items-center space-x-2 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-100 rounded transition-colors"
                     >
                       {widget.icon}
                       <span>{widget.title}</span>
@@ -313,24 +320,24 @@ export const CreatorDashboard: React.FC = () => {
         </div>
 
         {/* Quick Stats Footer */}
-        <Card className="p-4 bg-gradient-to-r from-primary-50 to-success-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
+        <Card className="p-6 bg-gradient-to-r from-primary-50 to-success-50">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-center space-x-8">
               <div className="text-center">
                 <p className="text-sm font-medium text-neutral-600">This Week</p>
-                <p className="text-lg font-bold text-primary-600">+{creatorStats.growthRate}%</p>
+                <p className="text-2xl font-bold text-primary-600">+{creatorStats.growthRate}%</p>
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium text-neutral-600">Top Content</p>
-                <p className="text-lg font-bold text-success-600">{(creatorStats.averageViews / 1000).toFixed(0)}K views</p>
+                <p className="text-2xl font-bold text-success-600">{(creatorStats.averageViews / 1000).toFixed(0)}K views</p>
               </div>
               <div className="text-center">
                 <p className="text-sm font-medium text-neutral-600">Revenue Goal</p>
-                <p className="text-lg font-bold text-warning-600">78% complete</p>
+                <p className="text-2xl font-bold text-warning-600">78%</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-3">
               <Button size="sm" variant="primary" leftIcon={<Target className="w-4 h-4" />}>
                 Set Goals
               </Button>

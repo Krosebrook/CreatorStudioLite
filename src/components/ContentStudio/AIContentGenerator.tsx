@@ -296,10 +296,10 @@ export const AIContentGenerator: React.FC<AIContentGeneratorProps> = ({
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center space-x-2">
           <Sparkles className="w-8 h-8 text-primary-500" />
-          <h1 className="text-3xl font-bold text-neutral-900">AI Content Generator</h1>
+          <h1 className="text-3xl font-bold text-neutral-900">Amplify AI Generator</h1>
         </div>
         <p className="text-neutral-600 max-w-2xl mx-auto">
-          Generate viral content ideas, captions, and scripts using advanced AI that understands your brand voice and audience
+          Generate viral content with AI that understands your brand voice and audience
         </p>
       </div>
 

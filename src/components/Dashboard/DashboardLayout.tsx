@@ -165,7 +165,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                  FlashFusion
+                  Amplify
                 </span>
               </div>
             </div>
@@ -176,7 +176,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" />
                 <input
                   type="text"
-                  placeholder="Search content, analytics, or ask AI... (⌘K)"
+                  placeholder="Search or ask AI... (⌘K)"
                   className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
@@ -406,7 +406,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <span className="text-sm font-medium">Upgrade to Pro</span>
                 </div>
                 <p className="text-xs opacity-90 mb-3">
-                  Unlock unlimited AI generation and advanced analytics
+                  Unlock unlimited AI + advanced analytics
                 </p>
                 <Button size="sm" variant="secondary" fullWidth>
                   Upgrade Now
