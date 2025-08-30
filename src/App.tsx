@@ -46,7 +46,43 @@ function App() {
       
       {/* Demo Toggle Button - Remove in production */}
       {user && (
-        <div className="fixed top-4 right-4 z-50 flex flex-col space-y-1">
+        <>
+          <div className="fixed top-4 right-4 z-50 flex flex-col space-y-1">
+            <button
+              onClick={() => setCurrentView('landing')}
+              className={cn(
+                'px-3 py-1 rounded text-xs transition-colors',
+                currentView === 'landing' ? 'bg-primary-500 text-white' : 'bg-black text-white hover:bg-neutral-800'
+              )}
+            >
+              Landing
+            </button>
+            <button
+              onClick={() => setCurrentView('dashboard')}
+              className={cn(
+                'px-3 py-1 rounded text-xs transition-colors',
+                currentView === 'dashboard' ? 'bg-primary-500 text-white' : 'bg-black text-white hover:bg-neutral-800'
+              )}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => setCurrentView('studio')}
+              className={cn(
+                'px-3 py-1 rounded text-xs transition-colors',
+                currentView === 'studio' ? 'bg-primary-500 text-white' : 'bg-black text-white hover:bg-neutral-800'
+              )}
+            >
+              Studio
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
           <button
             onClick={() => setCurrentView('landing')}
             className={cn(
