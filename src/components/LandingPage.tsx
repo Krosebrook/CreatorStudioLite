@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '../design-system/utils/cn';
 import { Button } from '../design-system/components/Button';
-import { Input } from '../design-system/components/Input';
 import { Card } from '../design-system/components/Card';
+import { AuthModal } from './Auth/AuthModal';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   ArrowRight, 
   Play, 
@@ -236,11 +237,10 @@ const pricingTiers: PricingTier[] = [
 export const LandingPage: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('features');
-  const [email, setEmail] = useState('');
   const [isSignupOpen, setIsSignupOpen] = useState(false);
-  const [signupStep, setSignupStep] = useState(1);
-  const [userType, setUserType] = useState<'creator' | 'agency' | 'brand'>('creator');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
   const [scrollY, setScrollY] = useState(0);
+  const { user } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
@@ -255,24 +255,23 @@ export const LandingPage: React.FC = () => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignup = () => {
+    setAuthMode('signup');
     setIsSignupOpen(true);
   };
 
-  const handleUserTypeSelect = (type: 'creator' | 'agency' | 'brand') => {
-    setUserType(type);
-    setSignupStep(2);
+  const handleSignin = () => {
+    setAuthMode('signin');
+    setIsSignupOpen(true);
   };
 
-  const completeSignup = () => {
-    // Simulate account creation
-    setTimeout(() => {
-      alert(`Welcome to FlashFusion! Your ${userType} account has been created. Check your email for next steps.`);
-      setIsSignupOpen(false);
-      setSignupStep(1);
-    }, 1000);
-  };
+  // Redirect authenticated users
+  useEffect(() => {
+    if (user) {
+      // User is authenticated, they should be redirected to dashboard
+      // This is handled in App.tsx
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50/30">
@@ -318,12 +317,12 @@ export const LandingPage: React.FC = () => {
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center space-x-4">
               <Button variant="ghost" size="sm">
-                Sign In
+                <button onClick={handleSignin}>Sign In</button>
               </Button>
               <Button 
                 variant="primary" 
                 size="sm"
-                onClick={() => setIsSignupOpen(true)}
+                onClick={handleSignup}
                 leftIcon={<Rocket className="w-4 h-4" />}
               >
                 Start Free Trial
@@ -370,15 +369,12 @@ export const LandingPage: React.FC = () => {
               </a>
               <div className="pt-4 border-t border-neutral-200 space-y-3">
                 <Button variant="ghost" fullWidth>
-                  Sign In
+                  <button onClick={handleSignin}>Sign In</button>
                 </Button>
                 <Button 
                   variant="primary" 
                   fullWidth
-                  onClick={() => {
-                    setIsSignupOpen(true);
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={handleSignup}
                   leftIcon={<Rocket className="w-4 h-4" />}
                 >
                   Start Free Trial
@@ -711,7 +707,7 @@ export const LandingPage: React.FC = () => {
                   variant={tier.highlighted ? "primary" : "secondary"}
                   fullWidth
                   size="lg"
-                  onClick={() => setIsSignupOpen(true)}
+                  onClick={handleSignup}
                 >
                   {tier.cta}
                 </Button>
@@ -743,7 +739,7 @@ export const LandingPage: React.FC = () => {
             <Button 
               size="lg" 
               variant="secondary"
-              onClick={() => setIsSignupOpen(true)}
+              onClick={handleSignup}
               leftIcon={<Rocket className="w-5 h-5" />}
               className="text-lg px-8 py-4"
             >
@@ -841,138 +837,12 @@ export const LandingPage: React.FC = () => {
         </div>
       </footer>
 
-      {/* Signup Modal */}
-      {isSignupOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-neutral-900">
-                  {signupStep === 1 ? 'Join FlashFusion' : 'Tell us about yourself'}
-                </h3>
-                <button
-                  onClick={() => {
-                    setIsSignupOpen(false);
-                    setSignupStep(1);
-                  }}
-                  className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {signupStep === 1 && (
-                <div className="space-y-4">
-                  <p className="text-neutral-600">
-                    Start your 14-day free trial. No credit card required.
-                  </p>
-                  
-                  <form onSubmit={handleSignup} className="space-y-4">
-                    <Input
-                      label="Email address"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="creator@example.com"
-                      required
-                    />
-                    
-                    <Button type="submit" variant="primary" fullWidth size="lg">
-                      Continue
-                    </Button>
-                  </form>
-
-                  <div className="text-center">
-                    <p className="text-sm text-neutral-600">
-                      Already have an account?{' '}
-                      <a href="#" className="text-primary-600 hover:text-primary-700 font-medium">
-                        Sign in
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {signupStep === 2 && (
-                <div className="space-y-6">
-                  <p className="text-neutral-600">
-                    Choose your account type to get personalized features
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => handleUserTypeSelect('creator')}
-                      className="w-full p-4 border-2 border-neutral-200 rounded-xl hover:border-primary-500 transition-colors text-left"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
-                          <Camera className="w-5 h-5 text-primary-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-neutral-900">Individual Creator</div>
-                          <div className="text-sm text-neutral-600">Perfect for solo creators and influencers</div>
-                        </div>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => handleUserTypeSelect('agency')}
-                      className="w-full p-4 border-2 border-neutral-200 rounded-xl hover:border-primary-500 transition-colors text-left"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
-                          <Users className="w-5 h-5 text-success-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-neutral-900">Agency/Team</div>
-                          <div className="text-sm text-neutral-600">Manage multiple creator accounts</div>
-                        </div>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => handleUserTypeSelect('brand')}
-                      className="w-full p-4 border-2 border-neutral-200 rounded-xl hover:border-primary-500 transition-colors text-left"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
-                          <Briefcase className="w-5 h-5 text-warning-600" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-neutral-900">Brand/Business</div>
-                          <div className="text-sm text-neutral-600">Find and collaborate with creators</div>
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {signupStep === 3 && (
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle className="w-8 h-8 text-success-600" />
-                  </div>
-                  <h4 className="text-xl font-semibold text-neutral-900">
-                    Welcome to FlashFusion!
-                  </h4>
-                  <p className="text-neutral-600">
-                    Your {userType} account is being set up. Check your email for next steps.
-                  </p>
-                  <Button 
-                    variant="primary" 
-                    fullWidth 
-                    size="lg"
-                    onClick={completeSignup}
-                  >
-                    Get Started
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isSignupOpen}
+        onClose={() => setIsSignupOpen(false)}
+        initialMode={authMode}
+      />
     </div>
   );
 };
