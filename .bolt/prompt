@@ -1,5 +1,87 @@
-For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+Overview
 
-By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+SparkLabs is a Bolt.new project that gives creators and teams a single studio to plan, brand, produce, publish, monetise, and measure content. Bolt.new lets you prompt, run, edit, and deploy full-stack apps in the browser, so SparkLabs ships as a modular workspace with connectors for social/video, design, storage, analytics, ecommerce, email/CRM, community, and AI. 
+GitHub
+bolt.new
 
-Use icons from lucide-react for logos.
+Assumptions
+
+Platform: Built and iterated inside Bolt.new, with optional exports to GitHub and production hosting. 
+GitHub
+bolt.new
+
+Auth model:
+
+User-owned channels (YouTube, TikTok, Instagram, LinkedIn, Pinterest): OAuth. 
+Google for Developers
+TikTok for Developers
+Facebook Developers
+Microsoft Learn
+Pinterest Developers
+
+Service integrations (Figma token, Canva key, Supabase, S3, Stripe): API keys/tokens. 
+Figma
+Figma Help Center
+canva.dev
+
+Data: Supabase (auth/storage) + optional S3 for heavy media.
+
+Security: RBAC, least-privilege scopes, secrets via Bolt’s environment/secrets UI.
+
+Personas (high level, for connector mapping)
+
+Solo creator (YouTuber/Short-form), Streamer, Podcaster, Blogger/SEO, Template Seller (Canva-maker), LLM Artist, Photographer/Filmmaker, Educator/Course Creator, Indie Ecommerce.
+
+Teams: Marketing, Social/Community, Agency/Studio, Product Marketing, Corporate Comms/PR, Sales Enablement, Non-profit/EDU/Gov, Enterprise Brand Governance.
+
+API Connector Matrix (what needs OAuth vs API key)
+Domain	Service	Auth	Typical Scopes / Notes
+Video/Social	YouTube Data API	OAuth	upload/read; follow Google OAuth 2.0; use youtube + youtube.upload with consent. 
+Google for Developers
+
+	YouTube metrics (readonly)	API Key	Channel/video metrics queries; cache to avoid quota spikes. 
+Google for Developers
+
+	TikTok Content Posting	OAuth	Upload init + transfer flow; user completes post in TikTok UI inbox. 
+TikTok for Developers
++1
+
+	Instagram Graph	OAuth	instagram_basic, pages_show_list; Business/Creator accounts only. 
+Facebook Developers
+
+	LinkedIn UGC	OAuth	w_member_social + OpenID basics; POST to v2/ugcPosts. 
+Microsoft Learn
++1
+
+	Pinterest	OAuth	Standard OAuth, token exchange/refresh. 
+Pinterest Developers
++1
+
+Design	Canva Connect / Apps SDK	API key	Integrate/sync designs, embed workflows. 
+canva.dev
++1
+
+	Figma REST	Token or OAuth	Access tokens and OAuth2 supported; PAT common. 
+Figma
+Figma Help Center
+
+Storage	Supabase	Service key	Storage + PostgREST; restrict via RLS.
+	AWS S3	Access keys	Media bucket, multipart upload.
+Analytics	GA4 Measurement Protocol	API secret	Server-side events (views, conversions).
+Email/CRM	Resend/SendGrid/Mailchimp/ConvertKit/HubSpot	API keys	Transactional + marketing sends, lists, forms.
+Ecommerce	Stripe	Secret key	Payments, webhooks.
+	Shopify	Admin token + store domain	Listings, media, orders.
+	Etsy/Printify	API keys	Listings, mockups, fulfillment.
+Community	Discord / Slack	Bot token	Posting, slash-commands, webhooks.
+AI/Media	OpenAI/Anthropic/Google GenAI/Replicate/Stability/ElevenLabs/AssemblyAI	API keys	Gen-AI, TTS, STT, image/video ops.
+Architecture (Bolt.new)
+
+/src/connectors: tiny wrappers with strict env validation (Zod).
+
+/src/workflows: job queue handlers (upload → post → schedule → fetch metrics).
+
+/src/rbac: roles, scopes, policy checks.
+
+/api/ routes: OAuth callbacks + webhook receivers (Stripe, etc.).
+
+/scripts/: health checks and smoke tests for connectors.
