@@ -27,12 +27,11 @@ function App() {
         <div className="text-center space-y-4">
           <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto">
             <Loader2 className="w-8 h-8 text-white animate-spin" />
+          </div>
             <p className="text-neutral-600">Loading Amplify...</p>
-          <p className="text-neutral-600">Loading FlashFusion...</p>
         </div>
       </div>
     );
-  }
   
   return (
     <div>
@@ -81,8 +80,6 @@ function App() {
     </div>
   );
 }
-
-export default App;
     )
   }
 }
