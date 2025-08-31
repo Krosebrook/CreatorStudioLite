@@ -32,6 +32,7 @@ function App() {
         </div>
       </div>
     );
+  }
   
   return (
     <div>
@@ -80,6 +81,5 @@ function App() {
     </div>
   );
 }
-    )
-  }
-}
+
+export default App;
