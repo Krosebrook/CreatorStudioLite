@@ -1,178 +1,305 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '../lib/supabase';
+import { User as SupabaseUser, Session, AuthError } from '@supabase/supabase-js';
+import { logger } from '../utils/logger';
 
-// Define the shape of your auth context
 interface User {
   id: string;
   email: string;
   name?: string;
+  avatarUrl?: string;
+  metadata?: Record<string, any>;
 }
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  signup: (email: string, password: string, name?: string) => Promise<void>;
+  loading: boolean;
+  signUp: (email: string, password: string, metadata?: { name?: string }) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signOut: () => Promise<{ error: AuthError | null }>;
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  updateProfile: (updates: Partial<User>) => Promise<{ error: Error | null }>;
 }
 
-// Create the context with a default value
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Helper function to safely get initial session
-const getInitialSession = (): User | null => {
-  try {
-    // Check if we're in the browser
-    if (typeof window === 'undefined') {
-      return null;
-    }
+function mapSupabaseUser(supabaseUser: SupabaseUser | null): User | null {
+  if (!supabaseUser) return null;
 
-    // Safely check localStorage
-    const storedAuth = localStorage.getItem('auth');
-    if (!storedAuth) {
-      return null;
-    }
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    name: supabaseUser.user_metadata?.name || supabaseUser.user_metadata?.display_name,
+    avatarUrl: supabaseUser.user_metadata?.avatar_url,
+    metadata: supabaseUser.user_metadata
+  };
+}
 
-    // Parse the stored auth data with error handling
-    const parsedAuth = JSON.parse(storedAuth);
-    
-    // Validate that parsedAuth has the expected structure
-    if (parsedAuth && parsedAuth.auth && parsedAuth.auth.user) {
-      return parsedAuth.auth.user;
-    }
-    
-    // Alternative: Check if parsedAuth itself is the user object
-    if (parsedAuth && parsedAuth.id && parsedAuth.email) {
-      return parsedAuth;
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error getting initial session:', error);
-    return null;
-  }
-};
-
-// AuthProvider component
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Initialize auth state on mount
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
-        setIsLoading(true);
-        const initialUser = getInitialSession();
-        setUser(initialUser);
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          logger.error('Failed to get session', error);
+          return;
+        }
+
+        if (mounted) {
+          setSession(currentSession);
+          setUser(mapSupabaseUser(currentSession?.user || null));
+        }
+
+        if (currentSession?.user) {
+          await ensureUserProfile(currentSession.user);
+        }
       } catch (error) {
-        console.error('Error initializing auth:', error);
-        setUser(null);
+        logger.error('Auth initialization error', error as Error);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        logger.info('Auth state changed', { event });
+
+        if (mounted) {
+          setSession(currentSession);
+          setUser(mapSupabaseUser(currentSession?.user || null));
+
+          if (event === 'SIGNED_IN' && currentSession?.user) {
+            await ensureUserProfile(currentSession.user);
+          }
+
+          if (event === 'SIGNED_OUT') {
+            setUser(null);
+            setSession(null);
+          }
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      
-      // Replace this with your actual API call
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  const ensureUserProfile = async (supabaseUser: SupabaseUser) => {
+    if (!supabase) return;
 
-      if (!response.ok) {
-        throw new Error('Login failed');
+    try {
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .maybeSingle();
+
+      if (fetchError) {
+        logger.error('Failed to fetch user profile', fetchError);
+        return;
       }
 
-      const data = await response.json();
-      const userData = data.user;
-      
-      // Store user data in localStorage
-      localStorage.setItem('auth', JSON.stringify({ auth: { user: userData } }));
-      setUser(userData);
+      if (!existingProfile) {
+        const { error: insertError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: supabaseUser.id,
+            display_name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0],
+            avatar_url: supabaseUser.user_metadata?.avatar_url,
+            metadata: supabaseUser.user_metadata || {}
+          });
+
+        if (insertError) {
+          logger.error('Failed to create user profile', insertError);
+        } else {
+          logger.info('User profile created', { userId: supabaseUser.id });
+        }
+      }
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
+      logger.error('Error ensuring user profile', error as Error);
     }
   };
 
-  const logout = async () => {
+  const signUp = async (
+    email: string,
+    password: string,
+    metadata?: { name?: string }
+  ): Promise<{ error: AuthError | null }> => {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
+    }
+
     try {
-      setIsLoading(true);
-      
-      // Call logout API if needed
-      await fetch('/api/auth/logout', {
-        method: 'POST',
+      setLoading(true);
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata || {},
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
       });
-      
-      // Clear local storage
-      localStorage.removeItem('auth');
-      setUser(null);
+
+      if (error) {
+        logger.error('Sign up failed', error);
+        return { error };
+      }
+
+      logger.info('User signed up successfully', { email });
+      return { error: null };
     } catch (error) {
-      console.error('Logout error:', error);
-      // Even if API call fails, clear local state
-      localStorage.removeItem('auth');
-      setUser(null);
+      logger.error('Sign up error', error as Error);
+      return { error: { message: (error as Error).message, name: 'SignUpError', status: 500 } as AuthError };
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const signup = async (email: string, password: string, name?: string) => {
+  const signIn = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
+    }
+
     try {
-      setIsLoading(true);
-      
-      // Replace with your actual API call
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, name }),
+      setLoading(true);
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
 
-      if (!response.ok) {
-        throw new Error('Signup failed');
+      if (error) {
+        logger.error('Sign in failed', error);
+        return { error };
       }
 
-      const data = await response.json();
-      const userData = data.user;
-      
-      // Store user data in localStorage
-      localStorage.setItem('auth', JSON.stringify({ auth: { user: userData } }));
-      setUser(userData);
+      logger.info('User signed in successfully', { email });
+      return { error: null };
     } catch (error) {
-      console.error('Signup error:', error);
-      throw error;
+      logger.error('Sign in error', error as Error);
+      return { error: { message: (error as Error).message, name: 'SignInError', status: 500 } as AuthError };
     } finally {
-      setIsLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const signOut = async (): Promise<{ error: AuthError | null }> => {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
+    }
+
+    try {
+      setLoading(true);
+
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        logger.error('Sign out failed', error);
+        return { error };
+      }
+
+      setUser(null);
+      setSession(null);
+
+      logger.info('User signed out successfully');
+      return { error: null };
+    } catch (error) {
+      logger.error('Sign out error', error as Error);
+      return { error: { message: (error as Error).message, name: 'SignOutError', status: 500 } as AuthError };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (email: string): Promise<{ error: AuthError | null }> => {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      });
+
+      if (error) {
+        logger.error('Password reset failed', error);
+        return { error };
+      }
+
+      logger.info('Password reset email sent', { email });
+      return { error: null };
+    } catch (error) {
+      logger.error('Password reset error', error as Error);
+      return { error: { message: (error as Error).message, name: 'ResetPasswordError', status: 500 } as AuthError };
+    }
+  };
+
+  const updateProfile = async (updates: Partial<User>): Promise<{ error: Error | null }> => {
+    if (!supabase || !user) {
+      return { error: new Error('Not authenticated') };
+    }
+
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          display_name: updates.name,
+          avatar_url: updates.avatarUrl,
+          metadata: updates.metadata,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        logger.error('Profile update failed', error);
+        return { error };
+      }
+
+      setUser({ ...user, ...updates });
+      logger.info('Profile updated successfully', { userId: user.id });
+      return { error: null };
+    } catch (error) {
+      logger.error('Profile update error', error as Error);
+      return { error: error as Error };
     }
   };
 
   const value: AuthContextType = {
     user,
+    session,
     isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout,
-    signup,
+    loading,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+    updateProfile
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook to use the auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -181,5 +308,4 @@ export const useAuth = () => {
   return context;
 };
 
-// Export the context if needed elsewhere
 export default AuthContext;
