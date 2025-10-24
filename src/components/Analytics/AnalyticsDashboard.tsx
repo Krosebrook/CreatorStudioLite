@@ -46,7 +46,7 @@ export const AnalyticsDashboard: React.FC = () => {
     if (user) {
       loadAnalytics();
     }
-  }, [user, timeRange, selectedPlatform]);
+  }, [user, timeRange, selectedPlatform, loadAnalytics]);
 
   const loadAnalytics = async () => {
     try {
@@ -90,11 +90,11 @@ export const AnalyticsDashboard: React.FC = () => {
     }
   };
 
-  const calculateOverallMetrics = (data: any[]) => {
-    const totalViews = data.reduce((sum, item) => sum + (item.views || 0), 0);
-    const totalLikes = data.reduce((sum, item) => sum + (item.likes || 0), 0);
-    const totalComments = data.reduce((sum, item) => sum + (item.comments || 0), 0);
-    const totalShares = data.reduce((sum, item) => sum + (item.shares || 0), 0);
+  const calculateOverallMetrics = (data: unknown[]) => {
+    const totalViews = data.reduce((sum, item: any) => sum + (item.views || 0), 0);
+    const totalLikes = data.reduce((sum, item: any) => sum + (item.likes || 0), 0);
+    const totalComments = data.reduce((sum, item: any) => sum + (item.comments || 0), 0);
+    data.reduce((sum, item: any) => sum + (item.shares || 0), 0);
     const avgEngagement = data.length > 0
       ? data.reduce((sum, item) => sum + (item.engagement_rate || 0), 0) / data.length
       : 0;
@@ -127,10 +127,10 @@ export const AnalyticsDashboard: React.FC = () => {
     ]);
   };
 
-  const calculatePlatformMetrics = (data: any[]) => {
+  const calculatePlatformMetrics = (data: unknown[]) => {
     const platformMap = new Map<string, PlatformMetrics>();
 
-    data.forEach((item) => {
+    data.forEach((item: any) => {
       const platform = item.post?.platform || 'unknown';
       const existing = platformMap.get(platform) || {
         platform,
@@ -161,10 +161,10 @@ export const AnalyticsDashboard: React.FC = () => {
     setPlatformMetrics(metrics.sort((a, b) => b.views - a.views));
   };
 
-  const calculateTopContent = (data: any[]) => {
+  const calculateTopContent = (data: unknown[]) => {
     const contentMap = new Map<string, ContentPerformance>();
 
-    data.forEach((item) => {
+    data.forEach((item: any) => {
       const contentId = item.post?.content?.id;
       if (!contentId) return;
 

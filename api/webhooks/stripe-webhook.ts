@@ -1,8 +1,13 @@
+interface StripeObject {
+  id: string;
+  [key: string]: unknown;
+}
+
 interface StripeWebhookEvent {
   id: string;
   type: string;
   data: {
-    object: any;
+    object: StripeObject;
   };
   created: number;
 }
@@ -61,9 +66,9 @@ export async function handleStripeWebhook(
 }
 
 function verifyStripeSignature(
-  body: string,
-  signature: string,
-  secret: string
+  _body: string,
+  _signature: string,
+  _secret: string
 ): StripeWebhookEvent | null {
   throw new Error('Stripe signature verification must be implemented with Stripe SDK');
 }
@@ -99,26 +104,26 @@ async function processStripeEvent(event: StripeWebhookEvent): Promise<void> {
   }
 }
 
-async function handleCheckoutCompleted(session: any): Promise<void> {
+async function handleCheckoutCompleted(session: StripeObject): Promise<void> {
   console.log('Checkout completed:', session.id);
 }
 
-async function handleSubscriptionCreated(subscription: any): Promise<void> {
+async function handleSubscriptionCreated(subscription: StripeObject): Promise<void> {
   console.log('Subscription created:', subscription.id);
 }
 
-async function handleSubscriptionUpdated(subscription: any): Promise<void> {
+async function handleSubscriptionUpdated(subscription: StripeObject): Promise<void> {
   console.log('Subscription updated:', subscription.id);
 }
 
-async function handleSubscriptionDeleted(subscription: any): Promise<void> {
+async function handleSubscriptionDeleted(subscription: StripeObject): Promise<void> {
   console.log('Subscription deleted:', subscription.id);
 }
 
-async function handlePaymentSucceeded(invoice: any): Promise<void> {
+async function handlePaymentSucceeded(invoice: StripeObject): Promise<void> {
   console.log('Payment succeeded:', invoice.id);
 }
 
-async function handlePaymentFailed(invoice: any): Promise<void> {
+async function handlePaymentFailed(invoice: StripeObject): Promise<void> {
   console.log('Payment failed:', invoice.id);
 }

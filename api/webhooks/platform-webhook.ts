@@ -1,7 +1,13 @@
+interface WebhookData {
+  type?: string;
+  event?: string;
+  [key: string]: unknown;
+}
+
 interface PlatformWebhookEvent {
   platform: string;
   eventType: string;
-  data: any;
+  data: WebhookData;
   timestamp: number;
 }
 
@@ -10,7 +16,7 @@ export async function handlePlatformWebhook(
   platform: string
 ): Promise<Response> {
   try {
-    const body = await request.json();
+    const body = await request.json() as WebhookData;
 
     const isValid = await verifyWebhookSignature(request, body, platform);
 
@@ -54,8 +60,8 @@ export async function handlePlatformWebhook(
 }
 
 async function verifyWebhookSignature(
-  request: Request,
-  body: any,
+  _request: Request,
+  _body: WebhookData,
   platform: string
 ): Promise<boolean> {
   throw new Error(`Webhook verification for ${platform} must be implemented`);

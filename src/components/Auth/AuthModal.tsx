@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { cn } from '../../design-system/utils/cn';
 import { Button } from '../../design-system/components/Button';
 import { Input } from '../../design-system/components/Input';
 import { Card } from '../../design-system/components/Card';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  X, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  Loader2, 
-  CheckCircle, 
+import {
+  X,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  CheckCircle,
   AlertCircle,
   ArrowLeft,
   Sparkles,
@@ -121,16 +119,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`
       };
 
-      const { data, error } = await signUp(formData.email, formData.password, userData);
-      
+      const { error } = await signUp(formData.email, formData.password, userData);
+
       if (error) {
         setError(error.message);
       } else {
         setSuccess('Account created successfully! Please check your email to verify your account.');
         setMode('success');
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+    } catch (err) {
+      setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -144,16 +142,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError('');
 
     try {
-      const { data, error } = await signIn(formData.email, formData.password);
-      
+      const { error } = await signIn(formData.email, formData.password);
+
       if (error) {
         setError(error.message);
       } else {
         setSuccess('Signed in successfully!');
         handleClose();
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+    } catch (err) {
+      setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -170,16 +168,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError('');
 
     try {
-      const { data, error } = await resetPassword(formData.email);
-      
+      const { error } = await resetPassword(formData.email);
+
       if (error) {
         setError(error.message);
       } else {
         setSuccess('Password reset email sent! Check your inbox.');
         setMode('success');
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+    } catch (err) {
+      setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }

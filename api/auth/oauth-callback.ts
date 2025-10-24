@@ -126,18 +126,25 @@ function validateAndDecodeState(encodedState: string): OAuthState | null {
   }
 }
 
+interface TokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  token_type: string;
+}
+
 async function exchangeCodeForTokens(
-  provider: string,
-  code: string,
-  state: OAuthState
-): Promise<any> {
+  _provider: string,
+  _code: string,
+  _state: OAuthState
+): Promise<TokenResponse> {
   throw new Error('exchangeCodeForTokens must be implemented per provider');
 }
 
 async function storeConnectorCredentials(
-  userId: string,
-  connectorId: string,
-  tokens: any
+  _userId: string,
+  _connectorId: string,
+  _tokens: TokenResponse
 ): Promise<void> {
   throw new Error('storeConnectorCredentials must be implemented');
 }
