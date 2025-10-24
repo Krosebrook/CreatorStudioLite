@@ -100,8 +100,7 @@ const testimonials: Testimonial[] = [
     role: "Lifestyle Creator",
     company: "@sarahliveswell",
     avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150",
-    content: "FlashFusion transformed my content strategy. I went from 10K to 500K followers in 6 months, and my revenue increased by 400%. The AI suggestions are incredibly accurate.",
-    content: "Amplify transformed my content strategy. I went from 10K to 500K followers in 6 months, and my revenue increased by 400%. The AI suggestions are incredibly accurate.",
+    content: "SparkLabs transformed my content strategy. I went from 10K to 500K followers in 6 months, and my revenue increased by 400%. The AI suggestions are incredibly accurate.",
     metrics: {
       growth: "+5000%",
       revenue: "$50K/month",
@@ -114,8 +113,7 @@ const testimonials: Testimonial[] = [
     role: "Tech Reviewer",
     company: "@techwithmarcus",
     avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150",
-    content: "The analytics dashboard is a game-changer. I can see exactly which content performs best across all platforms and optimize in real-time. My engagement rate doubled.",
-    content: "Amplify's analytics dashboard is a game-changer. I can see exactly which content performs best across all platforms and optimize in real-time. My engagement rate doubled.",
+    content: "SparkLabs analytics dashboard is a game-changer. I can see exactly which content performs best across all platforms and optimize in real-time. My engagement rate doubled.",
     metrics: {
       growth: "+200%",
       revenue: "$25K/month",
@@ -128,8 +126,7 @@ const testimonials: Testimonial[] = [
     role: "Fashion Influencer",
     company: "@emmastyle",
     avatar: "https://images.pexels.com/photos/3992656/pexels-photo-3992656.jpeg?auto=compress&cs=tinysrgb&w=150",
-    content: "Brand partnerships became so much easier to manage. FlashFusion's marketplace connected me with premium brands, and I'm earning 3x more per collaboration.",
-    content: "Brand partnerships became so much easier to manage. Amplify's marketplace connected me with premium brands, and I'm earning 3x more per collaboration.",
+    content: "Brand partnerships became so much easier to manage. SparkLabs marketplace connected me with premium brands, and I'm earning 3x more per collaboration.",
     metrics: {
       growth: "+300%",
       revenue: "$75K/month",
