@@ -1,5 +1,4 @@
 import { PLATFORM_LIMITS, SupportedPlatform } from '../../config/constants';
-import { logger } from '../../utils/logger';
 
 export interface ContentData {
   title?: string;
@@ -37,8 +36,6 @@ export class ContentAdaptationService {
   ): AdaptedContent {
     const limits = PLATFORM_LIMITS[platform];
     const warnings: string[] = [];
-    let adaptedContent = content.body;
-    let truncated = false;
 
     switch (platform) {
       case 'youtube':

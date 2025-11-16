@@ -1,4 +1,4 @@
-import { Job, JobStatus, JobPriority, JobResult, JobHandler, JobType } from '../types';
+import { Job, JobStatus, JobPriority, JobHandler, JobType } from '../types';
 
 export class JobQueue {
   private static instance: JobQueue;
