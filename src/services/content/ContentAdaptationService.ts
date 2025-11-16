@@ -37,8 +37,8 @@ export class ContentAdaptationService {
   ): AdaptedContent {
     const limits = PLATFORM_LIMITS[platform];
     const warnings: string[] = [];
-    let adaptedContent = content.body;
-    let truncated = false;
+    const adaptedContent = content.body;
+    const truncated = false;
 
     switch (platform) {
       case 'youtube':
