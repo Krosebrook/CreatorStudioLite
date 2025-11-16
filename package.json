@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "health-check": "tsx scripts/health-check.ts",
     "smoke-test": "tsx scripts/smoke-test.ts",
-    "test": "npm run smoke-test"
+    "test": "npm run smoke-test",
+    "prod-check": "npm run build && npm audit && npm run test",
+    "security-audit": "npm audit --audit-level=moderate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
