@@ -46,7 +46,7 @@ export const TeamCollaboration: React.FC<{ workspaceId: string }> = ({ workspace
           role,
           joined_at,
           invited_by,
-          user:user_profiles!user_id(
+          user:profiles!user_id(
             display_name
           )
         `)

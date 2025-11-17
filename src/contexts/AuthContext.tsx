@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const { data: existingProfile, error: fetchError } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('*')
         .eq('id', supabaseUser.id)
         .maybeSingle();
@@ -121,12 +121,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!existingProfile) {
         const { error: insertError } = await supabase
-          .from('user_profiles')
+          .from('profiles')
           .insert({
-            id: supabaseUser.id,
-            display_name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0],
-            avatar_url: supabaseUser.user_metadata?.avatar_url,
-            metadata: supabaseUser.user_metadata || {}
+            user_id: supabaseUser.id,
+            display_name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0]
           });
 
         if (insertError) {
@@ -262,14 +260,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const { error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({
           display_name: updates.name,
-          avatar_url: updates.avatarUrl,
-          metadata: updates.metadata,
           updated_at: new Date().toISOString()
         })
-        .eq('id', user.id);
+        .eq('user_id', user.id);
 
       if (error) {
         logger.error('Profile update failed', error);
