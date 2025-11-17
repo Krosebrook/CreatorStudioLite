@@ -82,12 +82,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     return {
-      isValid: hasUpperCase && hasLowerCase && hasNumber && password.length >= 8,
+      isValid: hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && password.length >= 10,
       hasUpperCase,
       hasLowerCase,
       hasNumber,
-      hasMinLength: password.length >= 8
+      hasSpecialChar,
+      hasMinLength: password.length >= 10
     };
   };
 
@@ -116,10 +118,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       const passwordCheck = validatePassword(formData.password);
       if (!passwordCheck.isValid) {
         const missing = [];
-        if (!passwordCheck.hasMinLength) missing.push('at least 8 characters');
+        if (!passwordCheck.hasMinLength) missing.push('at least 10 characters');
         if (!passwordCheck.hasUpperCase) missing.push('one uppercase letter');
         if (!passwordCheck.hasLowerCase) missing.push('one lowercase letter');
         if (!passwordCheck.hasNumber) missing.push('one number');
+        if (!passwordCheck.hasSpecialChar) missing.push('one special character (!@#$%^&*...)');
         setError(`Password must contain: ${missing.join(', ')}`);
         return false;
       }
@@ -161,8 +164,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       if (error) {
         console.error('[MODAL] SignUp error:', error);
-        if (error.message.includes('weak_password') || error.message.includes('weak and easy')) {
-          setError('Password is too weak. Please choose a more unique password.');
+        if (error.message.includes('weak_password') || error.message.includes('weak and easy') || error.message.includes('pwned')) {
+          setError('This password appears in known data breaches. Please choose a different, more unique password for your security.');
         } else if (error.message.includes('User already registered')) {
           setError('An account with this email already exists. Please sign in instead.');
         } else if (error.message.includes('email_address_invalid')) {
@@ -172,8 +175,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         }
       } else {
         console.log('[MODAL] SignUp successful!');
-        setSuccess('Account created successfully! Please check your email to verify your account before signing in.');
-        setMode('success');
+        setSuccess('Account created successfully! You can now sign in with your credentials.');
+        setTimeout(() => {
+          setMode('signin');
+          setSuccess('');
+        }, 2000);
       }
     } catch (err) {
       console.error('[MODAL] SignUp exception:', err);
@@ -204,8 +210,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (error) {
         console.error('[MODAL] SignIn error:', error);
         if (error.message.includes('Invalid login credentials')) {
-          setError('Invalid email or password. Please check your credentials and try again.');
+          setError('Invalid email or password. Please check your credentials and try again. If you just signed up, make sure you\'re using the correct password.');
         } else if (error.message.includes('Email not confirmed')) {
+          setError('Please verify your email address before signing in. Check your inbox for the confirmation link.');
+        } else if (error.message.includes('email_not_confirmed') || error.message.includes('Email not confirmed')) {
           setError('Please verify your email address before signing in. Check your inbox for the confirmation link.');
         } else {
           setError(error.message);
@@ -514,9 +522,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 />
                 {formData.password && (
                   <div className="mt-2 space-y-1 text-xs">
-                    <div className={`flex items-center space-x-1 ${formData.password.length >= 8 ? 'text-success-600' : 'text-neutral-500'}`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${formData.password.length >= 8 ? 'bg-success-600' : 'bg-neutral-300'}`} />
-                      <span>At least 8 characters</span>
+                    <div className={`flex items-center space-x-1 ${formData.password.length >= 10 ? 'text-success-600' : 'text-neutral-500'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${formData.password.length >= 10 ? 'bg-success-600' : 'bg-neutral-300'}`} />
+                      <span>At least 10 characters</span>
                     </div>
                     <div className={`flex items-center space-x-1 ${/[A-Z]/.test(formData.password) ? 'text-success-600' : 'text-neutral-500'}`}>
                       <div className={`w-1.5 h-1.5 rounded-full ${/[A-Z]/.test(formData.password) ? 'bg-success-600' : 'bg-neutral-300'}`} />
@@ -529,6 +537,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <div className={`flex items-center space-x-1 ${/[0-9]/.test(formData.password) ? 'text-success-600' : 'text-neutral-500'}`}>
                       <div className={`w-1.5 h-1.5 rounded-full ${/[0-9]/.test(formData.password) ? 'bg-success-600' : 'bg-neutral-300'}`} />
                       <span>One number</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.password) ? 'text-success-600' : 'text-neutral-500'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(formData.password) ? 'bg-success-600' : 'bg-neutral-300'}`} />
+                      <span>One special character (!@#$%...)</span>
                     </div>
                   </div>
                 )}
