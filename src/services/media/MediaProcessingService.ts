@@ -58,8 +58,8 @@ export class MediaProcessingService {
     optimizations: string[]
   ): Promise<ProcessedMedia> {
     const processedUrl = media.url || URL.createObjectURL(media.file);
-    const processedSize = media.size;
-    const dimensions = media.dimensions;
+    let processedSize = media.size;
+    let dimensions = media.dimensions;
 
     if (limits.maxImageSize && media.size > limits.maxImageSize) {
       optimizations.push(`Image compressed to fit ${limits.maxImageSize / (1024 * 1024)}MB limit`);

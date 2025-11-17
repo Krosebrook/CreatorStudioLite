@@ -72,14 +72,38 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     onClose();
   };
 
+  const validateEmail = (email: string) => {
+    const disposableDomains = ['example.com', 'test.com', 'tempmail.com', 'throwaway.email'];
+    const domain = email.split('@')[1]?.toLowerCase();
+    return !disposableDomains.includes(domain);
+  };
+
+  const validatePassword = (password: string) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return {
+      isValid: hasUpperCase && hasLowerCase && hasNumber && password.length >= 8,
+      hasUpperCase,
+      hasLowerCase,
+      hasNumber,
+      hasMinLength: password.length >= 8
+    };
+  };
+
   const validateForm = () => {
     if (!formData.email) {
       setError('Email is required');
       return false;
     }
-    
+
     if (!formData.email.includes('@')) {
       setError('Please enter a valid email address');
+      return false;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError('Please use a valid email address (disposable domains not allowed)');
       return false;
     }
 
@@ -88,12 +112,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setError('Password is required');
         return false;
       }
-      
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters');
+
+      const passwordCheck = validatePassword(formData.password);
+      if (!passwordCheck.isValid) {
+        const missing = [];
+        if (!passwordCheck.hasMinLength) missing.push('at least 8 characters');
+        if (!passwordCheck.hasUpperCase) missing.push('one uppercase letter');
+        if (!passwordCheck.hasLowerCase) missing.push('one lowercase letter');
+        if (!passwordCheck.hasNumber) missing.push('one number');
+        setError(`Password must contain: ${missing.join(', ')}`);
         return false;
       }
-      
+
       if (formData.password !== formData.confirmPassword) {
         setError('Passwords do not match');
         return false;
@@ -105,8 +135,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    console.log('[MODAL] handleSignUp called');
 
+    if (!validateForm()) {
+      console.log('[MODAL] Form validation failed');
+      return;
+    }
+
+    console.log('[MODAL] Form validated, starting signup...');
     setLoading(true);
     setError('');
 
@@ -119,15 +155,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`
       };
 
+      console.log('[MODAL] Calling signUp with userData:', userData);
       const { error } = await signUp(formData.email, formData.password, userData);
+      console.log('[MODAL] signUp returned, error:', error);
 
       if (error) {
-        setError(error.message);
+        console.error('[MODAL] SignUp error:', error);
+        if (error.message.includes('weak_password') || error.message.includes('weak and easy')) {
+          setError('Password is too weak. Please choose a more unique password.');
+        } else if (error.message.includes('User already registered')) {
+          setError('An account with this email already exists. Please sign in instead.');
+        } else if (error.message.includes('email_address_invalid')) {
+          setError('Please use a valid email address from a real email provider.');
+        } else {
+          setError(error.message);
+        }
       } else {
-        setSuccess('Account created successfully! Please check your email to verify your account.');
+        console.log('[MODAL] SignUp successful!');
+        setSuccess('Account created successfully! Please check your email to verify your account before signing in.');
         setMode('success');
       }
     } catch (err) {
+      console.error('[MODAL] SignUp exception:', err);
       setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -136,21 +185,38 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    console.log('[MODAL] handleSignIn called');
 
+    if (!validateForm()) {
+      console.log('[MODAL] Form validation failed');
+      return;
+    }
+
+    console.log('[MODAL] Form validated, starting signin...');
     setLoading(true);
     setError('');
 
     try {
+      console.log('[MODAL] Calling signIn...');
       const { error } = await signIn(formData.email, formData.password);
+      console.log('[MODAL] signIn returned, error:', error);
 
       if (error) {
-        setError(error.message);
+        console.error('[MODAL] SignIn error:', error);
+        if (error.message.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please check your credentials and try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setError('Please verify your email address before signing in. Check your inbox for the confirmation link.');
+        } else {
+          setError(error.message);
+        }
       } else {
+        console.log('[MODAL] SignIn successful!');
         setSuccess('Signed in successfully!');
         handleClose();
       }
     } catch (err) {
+      console.error('[MODAL] SignIn exception:', err);
       setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -419,31 +485,54 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="creator@example.com"
+                placeholder="your.email@gmail.com"
+                description="Use a real email address from Gmail, Outlook, Yahoo, etc."
                 leftIcon={<Mail className="w-4 h-4" />}
                 required
                 autoComplete="email"
               />
 
-              <Input
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                placeholder="Create a strong password"
-                leftIcon={<Lock className="w-4 h-4" />}
-                rightIcon={
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-neutral-400 hover:text-neutral-600"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                }
-                required
-                autoComplete="new-password"
-              />
+              <div>
+                <Input
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Create a strong password"
+                  leftIcon={<Lock className="w-4 h-4" />}
+                  rightIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-neutral-400 hover:text-neutral-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  }
+                  required
+                  autoComplete="new-password"
+                />
+                {formData.password && (
+                  <div className="mt-2 space-y-1 text-xs">
+                    <div className={`flex items-center space-x-1 ${formData.password.length >= 8 ? 'text-success-600' : 'text-neutral-500'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${formData.password.length >= 8 ? 'bg-success-600' : 'bg-neutral-300'}`} />
+                      <span>At least 8 characters</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 ${/[A-Z]/.test(formData.password) ? 'text-success-600' : 'text-neutral-500'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[A-Z]/.test(formData.password) ? 'bg-success-600' : 'bg-neutral-300'}`} />
+                      <span>One uppercase letter</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 ${/[a-z]/.test(formData.password) ? 'text-success-600' : 'text-neutral-500'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[a-z]/.test(formData.password) ? 'bg-success-600' : 'bg-neutral-300'}`} />
+                      <span>One lowercase letter</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 ${/[0-9]/.test(formData.password) ? 'text-success-600' : 'text-neutral-500'}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${/[0-9]/.test(formData.password) ? 'bg-success-600' : 'bg-neutral-300'}`} />
+                      <span>One number</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <Input
                 label="Confirm Password"
@@ -556,32 +645,52 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
               <div>
                 <h4 className="text-xl font-semibold text-neutral-900 mb-2">
-                  {success.includes('reset') ? 'Check Your Email' : 'Welcome to Amplify!'}
+                  {success.includes('reset') ? 'Check Your Email' : 'Check Your Email'}
                 </h4>
                 <p className="text-neutral-600">{success}</p>
               </div>
-              
+
               {!success.includes('reset') && (
                 <div className="space-y-3">
-                  <div className="bg-primary-50 p-4 rounded-lg">
-                    <h5 className="font-medium text-primary-900 mb-2">What's Next?</h5>
-                    <ul className="text-sm text-primary-700 space-y-1">
-                      <li>• Connect your social media accounts</li>
-                      <li>• Create your first piece of content</li>
-                      <li>• Explore AI-powered features</li>
-                    </ul>
+                  <div className="bg-primary-50 border border-primary-200 p-4 rounded-lg text-left">
+                    <h5 className="font-semibold text-primary-900 mb-2 flex items-center">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Important: Email Verification Required
+                    </h5>
+                    <div className="text-sm text-primary-800 space-y-2">
+                      <p>We've sent a confirmation email to <strong>{formData.email}</strong></p>
+                      <ol className="list-decimal list-inside space-y-1 ml-2">
+                        <li>Open your email inbox</li>
+                        <li>Click the verification link in the email</li>
+                        <li>Return here and sign in with your credentials</li>
+                      </ol>
+                      <p className="text-xs text-primary-600 mt-3">
+                        Can't find the email? Check your spam folder or contact support.
+                      </p>
+                    </div>
                   </div>
-                  
+
                   <Button
                     variant="primary"
                     fullWidth
                     size="lg"
-                    onClick={handleClose}
-                    leftIcon={<Zap className="w-4 h-4" />}
+                    onClick={() => setMode('signin')}
+                    leftIcon={<ArrowLeft className="w-4 h-4" />}
                   >
-                    Get Started
+                    Go to Sign In
                   </Button>
                 </div>
+              )}
+
+              {success.includes('reset') && (
+                <Button
+                  variant="primary"
+                  fullWidth
+                  size="lg"
+                  onClick={handleClose}
+                >
+                  Close
+                </Button>
               )}
             </div>
           )}

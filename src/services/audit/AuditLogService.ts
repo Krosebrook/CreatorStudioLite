@@ -91,7 +91,7 @@ class AuditLogService {
     try {
       let query = supabase
         .from('audit_logs')
-        .select('*, user:user_profiles(display_name)', { count: 'exact' })
+        .select('*, user:profiles(display_name)', { count: 'exact' })
         .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
 

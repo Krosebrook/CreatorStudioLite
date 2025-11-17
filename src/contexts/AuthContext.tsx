@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const { data: existingProfile, error: fetchError } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('*')
         .eq('id', supabaseUser.id)
         .maybeSingle();
@@ -121,12 +121,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!existingProfile) {
         const { error: insertError } = await supabase
-          .from('user_profiles')
+          .from('profiles')
           .insert({
-            id: supabaseUser.id,
-            display_name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0],
-            avatar_url: supabaseUser.user_metadata?.avatar_url,
-            metadata: supabaseUser.user_metadata || {}
+            user_id: supabaseUser.id,
+            display_name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0]
           });
 
         if (insertError) {
@@ -145,12 +143,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     password: string,
     metadata?: { name?: string }
   ): Promise<{ error: AuthError | null }> => {
+    console.log('[AUTH] SignUp called with email:', email);
+
     if (!supabase) {
+      console.error('[AUTH] Supabase not configured!');
       return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
     }
 
     try {
       setLoading(true);
+      console.log('[AUTH] Calling supabase.auth.signUp...');
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -161,14 +163,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       });
 
+      console.log('[AUTH] SignUp response:', { data, error });
+
       if (error) {
+        console.error('[AUTH] Sign up failed:', error);
         logger.error('Sign up failed', error);
         return { error };
       }
 
+      console.log('[AUTH] User signed up successfully');
       logger.info('User signed up successfully', { email });
       return { error: null };
     } catch (error) {
+      console.error('[AUTH] Sign up exception:', error);
       logger.error('Sign up error', error as Error);
       return { error: { message: (error as Error).message, name: 'SignUpError', status: 500 } as AuthError };
     } finally {
@@ -177,26 +184,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signIn = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+    console.log('[AUTH] SignIn called with email:', email);
+
     if (!supabase) {
+      console.error('[AUTH] Supabase not configured!');
       return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
     }
 
     try {
       setLoading(true);
+      console.log('[AUTH] Calling supabase.auth.signInWithPassword...');
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
+      console.log('[AUTH] SignIn response:', { data, error });
+
       if (error) {
+        console.error('[AUTH] Sign in failed:', error);
         logger.error('Sign in failed', error);
         return { error };
       }
 
+      console.log('[AUTH] User signed in successfully');
       logger.info('User signed in successfully', { email });
       return { error: null };
     } catch (error) {
+      console.error('[AUTH] Sign in exception:', error);
       logger.error('Sign in error', error as Error);
       return { error: { message: (error as Error).message, name: 'SignInError', status: 500 } as AuthError };
     } finally {
@@ -262,14 +278,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const { error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({
           display_name: updates.name,
-          avatar_url: updates.avatarUrl,
-          metadata: updates.metadata,
           updated_at: new Date().toISOString()
         })
-        .eq('id', user.id);
+        .eq('user_id', user.id);
 
       if (error) {
         logger.error('Profile update failed', error);

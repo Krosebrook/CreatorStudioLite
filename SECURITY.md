@@ -2,176 +2,114 @@
 
 ## Supported Versions
 
-We release security updates for the following versions:
+We release patches for security vulnerabilities. Which versions are eligible for receiving such patches depends on the CVSS v3.0 Rating:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 0.x.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-We take security seriously. If you discover a security vulnerability, please follow these steps:
+If you discover a security vulnerability within this project, please send an email to the project maintainers. All security vulnerabilities will be promptly addressed.
 
-### 1. Do Not Open a Public Issue
+**Please do not report security vulnerabilities through public GitHub issues.**
 
-Please **do not** open a public GitHub issue for security vulnerabilities as this could put users at risk.
+### What to Include
 
-### 2. Report via Private Channel
+When reporting a vulnerability, please include:
 
-Send details of the vulnerability to the repository owner via:
-- GitHub Security Advisories (recommended)
-- Direct message to repository maintainers
+- Type of issue (e.g., buffer overflow, SQL injection, cross-site scripting, etc.)
+- Full paths of source file(s) related to the manifestation of the issue
+- The location of the affected source code (tag/branch/commit or direct URL)
+- Any special configuration required to reproduce the issue
+- Step-by-step instructions to reproduce the issue
+- Proof-of-concept or exploit code (if possible)
+- Impact of the issue, including how an attacker might exploit it
 
-### 3. Provide Details
+### What to Expect
 
-Include the following information:
-- Type of vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if any)
-
-### 4. Response Time
-
-- **Initial Response**: Within 48 hours
-- **Status Updates**: Every 5 business days
-- **Fix Timeline**: Depends on severity
-  - Critical: 1-7 days
-  - High: 7-14 days
-  - Medium: 14-30 days
-  - Low: 30-90 days
+- A response acknowledging receipt of your report within 48 hours
+- Regular updates on the progress of addressing the vulnerability
+- Credit for the discovery (if desired) when the vulnerability is publicly disclosed
 
 ## Security Best Practices
 
-### For Developers
+### Environment Variables
 
-1. **Never commit secrets**
-   - Use `.env` files (already in `.gitignore`)
-   - Use Blink.new environment variables for production
+- Never commit `.env` files to version control
+- Use different credentials for development and production
+- Rotate API keys and secrets regularly
+- Use environment-specific configuration
 
-2. **Keep dependencies updated**
-   - Run `npm audit` regularly
-   - Update packages: `npm update`
-   - Fix vulnerabilities: `npm audit fix`
+### Supabase Security
 
-3. **Code Review**
-   - All changes require review
-   - Security-sensitive code gets extra scrutiny
+- Enable Row Level Security (RLS) on all tables
+- Use service role key only in server-side code
+- Validate all user inputs
+- Implement rate limiting on API endpoints
 
-4. **Use HTTPS**
-   - All production deployments must use HTTPS
-   - API calls should use secure protocols
+### Authentication
 
-### For Deployments
+- Use secure password hashing
+- Implement multi-factor authentication where possible
+- Use secure session management
+- Implement proper CORS policies
 
-1. **Environment Variables**
-   - Never expose `VITE_SUPABASE_ANON_KEY` in client code beyond what's necessary
-   - Use Row Level Security (RLS) in Supabase
-   - Rotate API keys regularly
+### Dependencies
 
-2. **Supabase Security**
-   - Enable Row Level Security on all tables
-   - Use least-privilege policies
-   - Audit RLS policies regularly
+- Regularly update dependencies to patch known vulnerabilities
+- Run `npm audit` before each release
+- Review security advisories for critical packages
+- Use lock files (`package-lock.json`) to ensure consistent installations
 
-3. **OAuth Security**
-   - Use state parameter for CSRF protection
-   - Validate redirect URIs strictly
-   - Store tokens securely (use Supabase Auth)
+### API Security
 
-4. **Content Security Policy**
-   - CSP headers configured in `public/_headers`
-   - Restrict script sources
-   - Prevent XSS attacks
-
-5. **Regular Audits**
-   - Run security scans before deployments
-   - Review audit logs regularly
-   - Monitor for suspicious activity
-
-## Known Security Considerations
-
-### Client-Side Security
-
-This is a client-side application. Security considerations:
-
-1. **API Keys in Frontend**
-   - `VITE_SUPABASE_ANON_KEY` is intentionally public
-   - Protected by Supabase RLS policies
-   - Never expose service role keys
-
-2. **OAuth Tokens**
-   - Managed by Supabase Auth
-   - Stored securely in httpOnly cookies
-   - Short-lived access tokens
-
-3. **Data Validation**
-   - All user input validated on client
-   - Server-side validation in Supabase via RLS
-   - Use Zod for schema validation
-
-### Third-Party Integrations
-
-1. **Social Platforms**
-   - OAuth 2.0 with PKCE where supported
-   - Minimal scope requests (least privilege)
-   - Token refresh handled securely
-
-2. **Payment Processing**
-   - PCI compliance via Stripe
-   - No credit card data stored
-   - Webhook signature verification
-
-3. **AI Services**
-   - API keys stored server-side only
-   - Rate limiting implemented
-   - Content filtering enabled
-
-## Security Features
-
-### Implemented
-
-- ✅ Environment variable validation
-- ✅ Error boundary for graceful failures
-- ✅ Security headers configured
-- ✅ HTTPS enforcement
-- ✅ CSRF protection
-- ✅ XSS protection headers
-- ✅ Content Security Policy
-- ✅ Supabase Row Level Security
-- ✅ OAuth state validation
-- ✅ Audit logging
-
-### Recommended Additions
-
-- [ ] Rate limiting (implement in Supabase Edge Functions)
-- [ ] WAF (Web Application Firewall) via Cloudflare or similar
-- [ ] DDoS protection
-- [ ] Monitoring and alerting (Sentry, LogRocket)
-- [ ] Regular penetration testing
-- [ ] Security training for team members
-
-## Compliance
+- Validate and sanitize all inputs
+- Implement rate limiting
+- Use HTTPS for all communications
+- Implement proper error handling without exposing sensitive information
+- Use API versioning
 
 ### Data Protection
 
-- **User Data**: Stored in Supabase (SOC 2 Type II certified)
-- **GDPR**: Users can export/delete data via UI
-- **Data Retention**: Configurable in admin settings
+- Encrypt sensitive data at rest and in transit
+- Implement proper access controls
+- Regular security audits
+- Backup data regularly
+- Comply with relevant data protection regulations (GDPR, CCPA, etc.)
 
-### Privacy
+## Secure Development Guidelines
 
-- **Privacy Policy**: Should be added to production deployment
-- **Terms of Service**: Should be added to production deployment
-- **Cookie Consent**: Required for EU users
+1. **Code Review**: All code changes must be reviewed by at least one other developer
+2. **Static Analysis**: Use ESLint and TypeScript strict mode to catch potential issues
+3. **Dependency Scanning**: Use automated tools to scan for vulnerable dependencies
+4. **Secrets Management**: Never hardcode secrets; use environment variables or secret management services
+5. **Logging**: Log security-relevant events, but never log sensitive information
+6. **Testing**: Include security test cases in your test suite
 
-## Contact
+## Third-Party Services
 
-For security concerns, contact the repository maintainer:
-- GitHub: [@Krosebrook](https://github.com/Krosebrook)
-- Repository: [CreatorStudioLite](https://github.com/Krosebrook/CreatorStudioLite)
+This application integrates with:
+- Supabase (Database and Authentication)
+- Stripe (Payments)
+- Social Media Platforms (Content Publishing)
 
----
+Ensure all API keys and credentials for these services are:
+- Stored securely as environment variables
+- Rotated regularly
+- Scoped with minimum required permissions
+- Monitored for unusual activity
 
-**Last Updated**: 2025-11-16
-**Version**: 1.0.0
+## Security Updates
+
+Security updates will be released as soon as possible after a vulnerability is confirmed. Users are encouraged to:
+- Subscribe to release notifications
+- Keep their installations up to date
+- Review release notes for security-related changes
+
+## Responsible Disclosure
+
+We follow responsible disclosure practices and request that security researchers:
+- Allow reasonable time for issues to be patched before public disclosure
+- Make a good faith effort to avoid privacy violations and data destruction
+- Not exploit vulnerabilities beyond what is necessary to demonstrate the issue

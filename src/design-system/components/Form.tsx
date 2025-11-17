@@ -75,12 +75,13 @@ const validateField = (value: any, rules: ValidationRule[]): string => {
         }
         break;
       
-      case 'email':
+      case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (value && !emailRegex.test(value)) {
           return rule.message || 'Please enter a valid email address';
         }
         break;
+      }
       
       case 'url':
         try {

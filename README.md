@@ -1,141 +1,172 @@
-# Amplify (formerly SparkLabs)
+# Amplify Creator Platform
 
-The all-in-one creator platform for content creation, publishing, and monetization.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
 
-## 🚀 Quick Start
+The all-in-one creator platform for content creation, publishing, and monetization. Built with React, TypeScript, Vite, and Supabase.
 
-### Prerequisites
-- Node.js 18+ and npm
-- Supabase account ([sign up here](https://supabase.com))
-- Optional: API keys for social platforms and AI services
+## 🚀 Features
 
-### Installation
+- **Content Management**: Create, edit, and manage content across multiple platforms
+- **Multi-Platform Publishing**: Publish to Instagram, Facebook, Twitter, LinkedIn, TikTok, and YouTube
+- **Analytics Dashboard**: Track performance metrics and engagement across all platforms
+- **Monetization**: Stripe integration for subscriptions and payments
+- **Team Collaboration**: Multi-user support with role-based access control (RBAC)
+- **Media Management**: Upload, process, and organize media files
+- **Content Templates**: Reusable templates for consistent branding
+- **Scheduling**: Schedule posts for optimal engagement times
+- **Email Notifications**: Automated notifications for important events
+- **Audit Logging**: Track all system activities for compliance
+- **Export/Import**: Backup and restore your data
 
-1. Clone the repository:
-```bash
-git clone https://github.com/Krosebrook/CreatorStudioLite.git
-cd CreatorStudioLite
-```
+## 📋 Prerequisites
 
-2. Install dependencies:
-```bash
-npm install
-```
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- Supabase account (for database and authentication)
+- Stripe account (for payment processing, optional)
 
-3. Configure environment variables:
-```bash
-cp .env.example .env
-```
+## 🛠️ Installation
 
-4. Edit `.env` with your credentials:
-   - **Required**: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-   - **Optional**: Add API keys for platforms you want to use
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Krosebrook/CreatorStudioLite.git
+   cd CreatorStudioLite
+   ```
 
-5. Run the development server:
-```bash
-npm run dev
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Visit `http://localhost:5173` to see your application.
+3. **Configure environment variables**
+   
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` and add your configuration:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-## 📦 Building for Production
+4. **Set up Supabase**
+   
+   Run the database migrations:
+   ```bash
+   # Using Supabase CLI
+   npx supabase db push
+   ```
 
-Build the application:
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+   
+   The application will be available at `http://localhost:5173`
+
+## 🏗️ Build for Production
+
+Build the application for production:
+
 ```bash
 npm run build
 ```
 
 Preview the production build:
+
 ```bash
 npm run preview
 ```
 
-## 🔐 Environment Variables
+## 🧪 Testing
 
-See `.env.example` for a complete list of supported environment variables.
+Run the smoke tests:
 
-### Required Variables
-- `VITE_SUPABASE_URL` - Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+```bash
+npm test
+```
 
-### Optional Platform Integrations
-- YouTube, Instagram, TikTok, LinkedIn, Pinterest (OAuth)
-- OpenAI, Anthropic (API keys)
-- Stripe (for payments)
-- AWS S3 (for media storage)
+Run health checks:
 
-## 🌐 Deploying to Blink.new
+```bash
+npm run health-check
+```
 
-This project is optimized for [Blink.new](https://blink.new) deployment:
+## 📚 Project Structure
 
-1. Push your code to GitHub
-2. Import the repository in Blink.new
-3. Configure environment variables in the Blink.new dashboard
-4. Deploy!
-
-### Blink.new Configuration
-- **Build Command**: `npm run build`
-- **Output Directory**: `dist`
-- **Install Command**: `npm install`
-
-## 🛠️ Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run test` - Run smoke tests
-- `npm run health-check` - Check system health
-
-## 🏗️ Architecture
-
-- **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS
-- **Backend**: Supabase (Auth, Database, Storage)
-- **State Management**: React Context API
-- **API Integration**: Modular connectors for social platforms
-
-## 📚 Key Features
-
-- ✅ Multi-platform content publishing (YouTube, TikTok, Instagram, LinkedIn, Pinterest)
-- ✅ AI-powered content generation (OpenAI, Anthropic)
-- ✅ Design tool integration (Canva, Figma)
-- ✅ Analytics dashboard
-- ✅ Subscription management (Stripe)
-- ✅ Team collaboration
-- ✅ Audit logging
-- ✅ Export/Import functionality
+```
+CreatorStudioLite/
+├── api/                    # API endpoints (auth, webhooks)
+├── scripts/                # Utility scripts (health checks, smoke tests)
+├── src/
+│   ├── components/         # React components
+│   ├── config/            # Configuration files
+│   ├── connectors/        # Social platform connectors
+│   ├── contexts/          # React contexts
+│   ├── design-system/     # UI components and theme
+│   ├── lib/               # External library wrappers
+│   ├── rbac/              # Role-based access control
+│   ├── services/          # Business logic services
+│   ├── utils/             # Utility functions
+│   └── workflows/         # Job queue and workflow management
+├── supabase/              # Database migrations
+└── dist/                  # Production build output
+```
 
 ## 🔒 Security
 
-- All sensitive credentials should be stored in environment variables
-- Never commit `.env` files to version control
+For security concerns, please review our [Security Policy](SECURITY.md).
+
+Key security practices:
+- Never commit `.env` files
 - Use Row Level Security (RLS) in Supabase
-- OAuth tokens are handled securely through Supabase Auth
-
-## 📖 Documentation
-
-- [Phase 1 Completion](./PHASE_1_COMPLETE.md)
-- [Phase 2 Completion](./PHASE_2_COMPLETE.md)
-- [Phase 5 Completion](./PHASE_5_COMPLETE.md)
-- [Refactor Debug Notes](./REFACTOR_DEBUG_COMPLETE.md)
-
-## 🐛 Troubleshooting
-
-### Build Issues
-- Ensure all environment variables are set
-- Clear `node_modules` and reinstall: `rm -rf node_modules package-lock.json && npm install`
-- Update browserslist: `npx update-browserslist-db@latest`
-
-### Development Issues
-- Check Supabase credentials are valid
-- Verify network connectivity to external APIs
-- Check browser console for detailed error messages
-
-## 📄 License
-
-Private - All Rights Reserved
+- Rotate API keys regularly
+- Keep dependencies updated (`npm audit`)
+- Review the [Security Policy](SECURITY.md) for detailed guidelines
 
 ## 🤝 Contributing
 
-This is a private repository. For questions or issues, please contact the repository owner.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check the `/docs` directory for detailed guides
+- **Issues**: Report bugs via [GitHub Issues](https://github.com/Krosebrook/CreatorStudioLite/issues)
+- **Discussions**: Join conversations in [GitHub Discussions](https://github.com/Krosebrook/CreatorStudioLite/discussions)
+
+## 🗺️ Roadmap
+
+- [x] Phase 1: Core architecture and authentication
+- [x] Phase 2: Multi-platform connectors
+- [x] Phase 5: Analytics, monetization, and enterprise features
+- [ ] Advanced AI content generation
+- [ ] Mobile application
+- [ ] Advanced analytics and insights
+- [ ] WhiteLabel solutions
+
+## 💡 Technology Stack
+
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Payments**: Stripe
+- **Icons**: Heroicons, Lucide React
+- **Validation**: Zod
+- **Build Tool**: Vite
+- **Linting**: ESLint
+
+## 🌟 Acknowledgments
+
+Built with modern web technologies and best practices for scalability and maintainability.
+
+---
+
+Made with ❤️ by the CreatorStudioLite team

@@ -1,376 +1,386 @@
-# 🚀 Deployment Guide - Amplify
+# Deployment Guide
 
-This guide covers deployment to Blink.new and other production environments.
+This guide provides instructions for deploying the Amplify Creator Platform to various environments.
 
 ## Table of Contents
+
 - [Prerequisites](#prerequisites)
-- [Deploying to Blink.new](#deploying-to-blinknew)
 - [Environment Configuration](#environment-configuration)
-- [Production Checklist](#production-checklist)
-- [Monitoring & Maintenance](#monitoring--maintenance)
+- [Deployment Options](#deployment-options)
+  - [Docker Deployment](#docker-deployment)
+  - [Cloud Platform Deployments](#cloud-platform-deployments)
+- [Post-Deployment](#post-deployment)
+- [Monitoring and Maintenance](#monitoring-and-maintenance)
 
 ## Prerequisites
 
-### Required Services
-1. **Supabase Account** (Required)
-   - Sign up at [supabase.com](https://supabase.com)
-   - Create a new project
-   - Note your project URL and anon key
+Before deploying, ensure you have:
 
-2. **GitHub Account** (Required for Blink.new)
-   - Repository must be accessible to Blink.new
-
-### Optional Services (based on features needed)
-- YouTube API (for YouTube integration)
-- TikTok Developer Account (for TikTok integration)
-- Instagram Business/Creator Account (for Instagram integration)
-- LinkedIn Developer App (for LinkedIn integration)
-- Pinterest Developer Account (for Pinterest integration)
-- OpenAI API Key (for AI content generation)
-- Anthropic API Key (for Claude AI)
-- Stripe Account (for payment processing)
-- AWS S3 Account (for media storage)
-
-## Deploying to Blink.new
-
-### Step 1: Prepare Your Repository
-
-1. Ensure all code is committed and pushed to GitHub:
-```bash
-git add .
-git commit -m "Prepare for production deployment"
-git push origin main
-```
-
-2. Verify `.env` is in `.gitignore` (it should be by default)
-
-### Step 2: Import to Blink.new
-
-1. Visit [blink.new](https://blink.new)
-2. Click "New Project" or "Import Project"
-3. Connect your GitHub account if not already connected
-4. Select the `Krosebrook/CreatorStudioLite` repository
-5. Choose your branch (usually `main`)
-
-### Step 3: Configure Build Settings
-
-In Blink.new project settings, configure:
-
-- **Framework Preset**: Vite
-- **Build Command**: `npm run build`
-- **Output Directory**: `dist`
-- **Install Command**: `npm install`
-- **Development Command**: `npm run dev`
-
-### Step 4: Environment Variables
-
-Add the following environment variables in Blink.new dashboard:
-
-#### Required Variables
-```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-#### Application Configuration
-```env
-VITE_APP_NAME=Amplify
-VITE_APP_URL=https://your-domain.blink.new
-VITE_LOG_LEVEL=warn
-VITE_ENABLE_ANALYTICS=true
-```
-
-#### Optional Platform Credentials
-Add only the platforms you need:
-```env
-# YouTube
-VITE_YOUTUBE_CLIENT_ID=your_client_id
-VITE_YOUTUBE_CLIENT_SECRET=your_client_secret
-
-# Instagram
-VITE_INSTAGRAM_CLIENT_ID=your_client_id
-VITE_INSTAGRAM_CLIENT_SECRET=your_client_secret
-
-# TikTok
-VITE_TIKTOK_CLIENT_KEY=your_client_key
-VITE_TIKTOK_CLIENT_SECRET=your_client_secret
-
-# LinkedIn
-VITE_LINKEDIN_CLIENT_ID=your_client_id
-VITE_LINKEDIN_CLIENT_SECRET=your_client_secret
-
-# Pinterest
-VITE_PINTEREST_CLIENT_ID=your_client_id
-VITE_PINTEREST_CLIENT_SECRET=your_client_secret
-
-# AI Services
-VITE_OPENAI_API_KEY=sk-...
-VITE_ANTHROPIC_API_KEY=sk-ant-...
-
-# Payments
-VITE_STRIPE_PUBLIC_KEY=pk_live_...
-
-# Storage
-VITE_AWS_S3_BUCKET=your-bucket-name
-VITE_AWS_REGION=us-east-1
-```
-
-### Step 5: Deploy
-
-1. Click "Deploy" in Blink.new
-2. Wait for build to complete (typically 2-3 minutes)
-3. Visit your deployment URL
+1. **Supabase Project** configured and running
+2. **Environment Variables** properly set
+3. **Domain Name** (for production)
+4. **SSL Certificate** (recommended for production)
+5. **Stripe Account** (optional, for payment features)
 
 ## Environment Configuration
 
-### Setting Up Supabase
+### Required Environment Variables
 
-1. **Create Tables**: Run migrations in Supabase SQL Editor
-   - User profiles
-   - Workspaces
-   - Content
-   - Analytics
-   - Subscriptions
-   - Usage tracking
-   - Audit logs
+Create a `.env` file based on `.env.example`:
 
-2. **Enable Row Level Security (RLS)**: Ensure RLS is enabled on all tables
+```env
+# Supabase Configuration (Required)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
 
-3. **Configure Storage Buckets**:
-   - Create a `media` bucket for user uploads
-   - Set appropriate policies for authenticated users
+# Optional: Stripe Configuration
+VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
 
-4. **Set Up OAuth Providers** (if using social auth):
-   - Enable Google, GitHub, or other providers in Supabase Auth settings
+# Optional: Analytics
+VITE_ANALYTICS_ENABLED=true
 
-### Configuring OAuth Callbacks
-
-For each social platform, configure OAuth redirect URIs:
-
-**Format**: `https://your-domain.blink.new/api/auth/callback/{platform}`
-
-Examples:
-- YouTube: `https://your-domain.blink.new/api/auth/callback/youtube`
-- Instagram: `https://your-domain.blink.new/api/auth/callback/instagram`
-- TikTok: `https://your-domain.blink.new/api/auth/callback/tiktok`
-- LinkedIn: `https://your-domain.blink.new/api/auth/callback/linkedin`
-- Pinterest: `https://your-domain.blink.new/api/auth/callback/pinterest`
-
-### Stripe Webhook Configuration
-
-If using Stripe:
-1. Go to Stripe Dashboard → Developers → Webhooks
-2. Add endpoint: `https://your-domain.blink.new/api/webhooks/stripe`
-3. Select events to listen for:
-   - `checkout.session.completed`
-   - `customer.subscription.created`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.payment_succeeded`
-   - `invoice.payment_failed`
-
-## Production Checklist
-
-### Before Going Live
-
-- [ ] All required environment variables configured
-- [ ] Supabase project set up with proper RLS policies
-- [ ] OAuth redirect URIs configured for all platforms
-- [ ] Stripe webhooks configured (if using payments)
-- [ ] DNS records configured for custom domain (if applicable)
-- [ ] SSL certificate active (Blink.new provides this automatically)
-- [ ] Test all critical user flows
-- [ ] Verify social platform connections work
-- [ ] Test payment processing (if applicable)
-- [ ] Review and accept terms of service for all integrated platforms
-
-### Security Checklist
-
-- [ ] All API keys are production keys (not test/development)
-- [ ] Supabase RLS policies are properly configured
-- [ ] No sensitive data in frontend code or logs
-- [ ] HTTPS enforced on all pages
-- [ ] Content Security Policy headers configured
-- [ ] CORS settings properly configured
-- [ ] Rate limiting enabled (if applicable)
-
-### Performance Checklist
-
-- [ ] Images optimized and using appropriate formats
-- [ ] Lazy loading implemented for heavy components
-- [ ] CDN configured for static assets
-- [ ] Caching strategies implemented
-- [ ] Database indexes created for frequent queries
-- [ ] Bundle size optimized (check with `npm run build`)
-
-## Monitoring & Maintenance
-
-### Health Checks
-
-Run health checks regularly:
-```bash
-npm run health-check
+# Optional: Feature Flags
+VITE_ENABLE_AI_FEATURES=true
+VITE_ENABLE_TEAM_COLLABORATION=true
 ```
 
-This validates:
-- Environment variable configuration
-- Database connectivity
-- Connector availability
-- Workflow system status
-- RBAC configuration
+### Environment-Specific Configuration
 
-### Monitoring Recommendations
-
-1. **Error Tracking**: Consider integrating Sentry or similar service
-   - Uncomment error tracking in `ErrorBoundary.tsx`
-   - Add Sentry DSN to environment variables
-
-2. **Analytics**: Monitor user behavior and performance
-   - Google Analytics
-   - Supabase Analytics
-   - Custom analytics dashboard (built-in)
-
-3. **Uptime Monitoring**: Use services like:
-   - UptimeRobot
-   - Pingdom
-   - StatusCake
-
-4. **Log Aggregation**: Consider using:
-   - Supabase Logs
-   - LogRocket
-   - Datadog
-
-### Regular Maintenance Tasks
-
-**Weekly**:
-- Review error logs
-- Check API usage and quotas
-- Monitor database performance
-- Review audit logs
-
-**Monthly**:
-- Update dependencies: `npm update`
-- Review and rotate API keys if necessary
-- Backup Supabase database
-- Review user feedback and bug reports
-
-**Quarterly**:
-- Security audit
-- Performance optimization review
-- Update documentation
-- Review and update OAuth application permissions
-
-## Troubleshooting
-
-### Build Failures
-
-**Issue**: Build fails with module not found errors
-```bash
-# Solution: Clean install
-rm -rf node_modules package-lock.json
-npm install
-npm run build
+#### Development
+```env
+NODE_ENV=development
+VITE_API_URL=http://localhost:3000
 ```
 
-**Issue**: TypeScript compilation errors
-```bash
-# Solution: Check TypeScript version
-npm install typescript@latest --save-dev
+#### Staging
+```env
+NODE_ENV=staging
+VITE_API_URL=https://staging.yourapp.com
 ```
 
-### Runtime Errors
+#### Production
+```env
+NODE_ENV=production
+VITE_API_URL=https://api.yourapp.com
+```
 
-**Issue**: Supabase connection fails
-- Verify `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are correct
-- Check Supabase project is active
-- Verify RLS policies don't block legitimate requests
+## Deployment Options
 
-**Issue**: OAuth redirects fail
-- Verify redirect URIs match exactly in platform developer console
-- Check domain is correct (no trailing slashes)
-- Ensure HTTPS is enabled
+### Docker Deployment
 
-**Issue**: API rate limits exceeded
-- Implement caching for frequently accessed data
-- Review API call patterns
-- Consider upgrading API quotas
+The easiest way to deploy is using Docker.
 
-### Performance Issues
+#### 1. Build the Docker Image
 
-**Issue**: Slow initial load
-- Enable code splitting in `vite.config.ts` (already configured)
-- Optimize bundle size
-- Use lazy loading for routes
+```bash
+docker build -t amplify-creator-platform .
+```
 
-**Issue**: Database queries slow
-- Add database indexes
-- Review and optimize queries
-- Enable Supabase connection pooling
+#### 2. Run with Docker Compose
 
-## Getting Help
+```bash
+docker-compose up -d
+```
 
-- **Documentation**: Review `PHASE_*_COMPLETE.md` files
-- **Supabase Docs**: [supabase.com/docs](https://supabase.com/docs)
-- **Vite Docs**: [vitejs.dev](https://vitejs.dev)
-- **Blink.new Support**: Contact through their support channels
+The application will be available at `http://localhost:3000`
+
+#### 3. Docker Hub Deployment
+
+```bash
+# Tag the image
+docker tag amplify-creator-platform your-dockerhub-username/amplify-creator-platform:latest
+
+# Push to Docker Hub
+docker push your-dockerhub-username/amplify-creator-platform:latest
+
+# Pull and run on server
+docker pull your-dockerhub-username/amplify-creator-platform:latest
+docker run -d -p 80:80 --env-file .env your-dockerhub-username/amplify-creator-platform:latest
+```
+
+### Cloud Platform Deployments
+
+#### Vercel Deployment
+
+1. **Install Vercel CLI**:
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Deploy**:
+   ```bash
+   vercel
+   ```
+
+3. **Configure Environment Variables** in Vercel dashboard
+
+4. **Deploy to Production**:
+   ```bash
+   vercel --prod
+   ```
+
+#### Netlify Deployment
+
+1. **Install Netlify CLI**:
+   ```bash
+   npm install -g netlify-cli
+   ```
+
+2. **Build the application**:
+   ```bash
+   npm run build
+   ```
+
+3. **Deploy**:
+   ```bash
+   netlify deploy --prod --dir=dist
+   ```
+
+4. **Configure Environment Variables** in Netlify dashboard
+
+#### AWS Deployment (S3 + CloudFront)
+
+1. **Build the application**:
+   ```bash
+   npm run build
+   ```
+
+2. **Create S3 Bucket**:
+   ```bash
+   aws s3 mb s3://your-bucket-name
+   ```
+
+3. **Upload files**:
+   ```bash
+   aws s3 sync dist/ s3://your-bucket-name --delete
+   ```
+
+4. **Configure S3 for static website hosting**:
+   ```bash
+   aws s3 website s3://your-bucket-name --index-document index.html --error-document index.html
+   ```
+
+5. **Create CloudFront distribution** for HTTPS and CDN
+
+#### Google Cloud Platform (Cloud Run)
+
+1. **Build and push Docker image**:
+   ```bash
+   gcloud builds submit --tag gcr.io/your-project-id/amplify-creator-platform
+   ```
+
+2. **Deploy to Cloud Run**:
+   ```bash
+   gcloud run deploy amplify-creator-platform \
+     --image gcr.io/your-project-id/amplify-creator-platform \
+     --platform managed \
+     --region us-central1 \
+     --allow-unauthenticated
+   ```
+
+#### DigitalOcean App Platform
+
+1. **Connect your GitHub repository** to DigitalOcean App Platform
+
+2. **Configure build settings**:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+
+3. **Set environment variables** in the DigitalOcean dashboard
+
+4. **Deploy** - DigitalOcean will automatically build and deploy
+
+#### Heroku Deployment
+
+1. **Install Heroku CLI**:
+   ```bash
+   npm install -g heroku
+   ```
+
+2. **Login to Heroku**:
+   ```bash
+   heroku login
+   ```
+
+3. **Create Heroku app**:
+   ```bash
+   heroku create your-app-name
+   ```
+
+4. **Add buildpack**:
+   ```bash
+   heroku buildpacks:set heroku/nodejs
+   ```
+
+5. **Set environment variables**:
+   ```bash
+   heroku config:set VITE_SUPABASE_URL=your-url
+   heroku config:set VITE_SUPABASE_ANON_KEY=your-key
+   ```
+
+6. **Deploy**:
+   ```bash
+   git push heroku main
+   ```
+
+## Post-Deployment
+
+### 1. Database Setup
+
+After deploying, run database migrations:
+
+```bash
+# Using Supabase CLI
+npx supabase db push
+```
+
+Or manually execute the SQL files in `supabase/migrations/`
+
+### 2. Configure Supabase Settings
+
+1. **Enable Row Level Security (RLS)** on all tables
+2. **Set up authentication providers** (Google, GitHub, etc.)
+3. **Configure storage buckets** for media uploads
+4. **Set up webhook endpoints** for real-time updates
+
+### 3. DNS Configuration
+
+Point your domain to your deployment:
+
+- **A Record**: Point to your server IP (for traditional hosting)
+- **CNAME Record**: Point to your cloud provider (for Vercel, Netlify, etc.)
+- **CloudFlare**: Recommended for additional security and CDN
+
+### 4. SSL Certificate
+
+Ensure HTTPS is enabled:
+- Most cloud providers (Vercel, Netlify) provide automatic SSL
+- For custom servers, use Let's Encrypt or Cloudflare SSL
+
+### 5. CORS Configuration
+
+Update CORS settings in your Supabase project:
+- Add your production domain to allowed origins
+- Configure API endpoint CORS headers
+
+## Health Checks
+
+The application includes health check endpoints:
+
+- **Docker**: `http://localhost/health`
+- **Application**: Run `npm run health-check` to verify services
+
+Monitor these endpoints to ensure the application is running correctly.
+
+## Performance Optimization
+
+### CDN Configuration
+
+Use a CDN to serve static assets:
+- CloudFront (AWS)
+- Cloud CDN (GCP)
+- Cloudflare
+- Vercel Edge Network
+
+### Caching Strategy
+
+Configure caching headers in `nginx.conf`:
+- Static assets: 1 year cache
+- HTML: No cache (for SPA routing)
+- API responses: Custom cache based on endpoint
+
+### Bundle Optimization
+
+The build process automatically:
+- Minifies JavaScript and CSS
+- Tree-shakes unused code
+- Code splits for optimal loading
+- Compresses assets with gzip
+
+## Monitoring and Maintenance
+
+### Logging
+
+Set up logging for:
+- Application errors
+- API requests
+- User authentication events
+- Payment transactions
+
+Recommended tools:
+- **Sentry** for error tracking
+- **LogRocket** for session replay
+- **Datadog** for infrastructure monitoring
+- **Supabase Dashboard** for database monitoring
+
+### Performance Monitoring
+
+Monitor key metrics:
+- Page load time
+- Time to interactive
+- API response times
+- Database query performance
+
+Tools:
+- **Google Lighthouse**
+- **WebPageTest**
+- **New Relic**
+- **Grafana**
+
+### Backup Strategy
+
+Regular backups:
+1. **Database**: Daily automatic backups via Supabase
+2. **Media Files**: Regular S3/Storage bucket backups
+3. **Configuration**: Store in version control
+
+### Security Updates
+
+Maintain security:
+1. **Dependencies**: Run `npm audit` weekly
+2. **Security Patches**: Apply promptly
+3. **Supabase**: Keep updated to latest stable version
+4. **SSL Certificates**: Monitor expiration dates
+
+### Scaling Considerations
+
+As your application grows:
+1. **Database**: Consider Supabase Pro plan or dedicated instance
+2. **Media Storage**: Use CDN for media delivery
+3. **Caching**: Implement Redis for session/data caching
+4. **Load Balancing**: Add multiple application instances
+5. **Database Read Replicas**: For read-heavy workloads
 
 ## Rollback Procedure
 
-If deployment fails:
+If a deployment fails:
 
-1. **In Blink.new**:
-   - Go to Deployments tab
-   - Find last successful deployment
-   - Click "Redeploy" on that version
+1. **Vercel/Netlify**: Use dashboard to revert to previous deployment
+2. **Docker**: 
+   ```bash
+   docker pull your-image:previous-tag
+   docker-compose up -d
+   ```
+3. **Traditional Server**: Restore from backup or redeploy previous version
 
-2. **In Git**:
-```bash
-# Find last working commit
-git log --oneline
-# Revert to that commit
-git revert <commit-hash>
-git push origin main
-```
+## CI/CD Pipeline
 
-3. **Emergency Maintenance Mode**:
-   - Set `VITE_MAINTENANCE_MODE=true` in environment variables
-   - Deploy a simple maintenance page
+The project includes GitHub Actions workflows:
+- **CI**: Runs on every PR (lint, build, test)
+- **Security**: CodeQL scanning for vulnerabilities
 
----
+Consider setting up automated deployments:
+- Deploy to staging on merge to `develop`
+- Deploy to production on merge to `main`
 
-## Quick Reference
+## Support
 
-### Essential Commands
-```bash
-# Development
-npm run dev
-
-# Build
-npm run build
-
-# Preview production build
-npm run preview
-
-# Run tests
-npm run test
-
-# Health check
-npm run health-check
-
-# Lint code
-npm run lint
-```
-
-### Important URLs
-- Supabase Dashboard: `https://supabase.com/dashboard`
-- Stripe Dashboard: `https://dashboard.stripe.com`
-- Blink.new Dashboard: `https://blink.new/dashboard`
-
-### Support Contacts
-- Project Repository: `https://github.com/Krosebrook/CreatorStudioLite`
-- Issues: Create issue in GitHub repository
+For deployment issues:
+- Check [GitHub Issues](https://github.com/Krosebrook/CreatorStudioLite/issues)
+- Review [SECURITY.md](SECURITY.md) for security concerns
+- Consult [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines
 
 ---
 
-**Last Updated**: 2025-11-16
+**Last Updated**: 2025
 **Version**: 1.0.0

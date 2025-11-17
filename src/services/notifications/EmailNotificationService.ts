@@ -103,9 +103,9 @@ class EmailNotificationService {
   ): Promise<void> {
     try {
       const { data: userProfile } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('display_name')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .maybeSingle();
 
       const { data: authUser } = await supabase.auth.admin.getUserById(userId);

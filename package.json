@@ -1,18 +1,36 @@
 {
   "name": "amplify-creator-platform",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "All-in-one creator platform for content creation, publishing, and monetization",
+  "author": "CreatorStudioLite Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Krosebrook/CreatorStudioLite.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:production": "NODE_ENV=production npm run build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "health-check": "tsx scripts/health-check.ts",
     "smoke-test": "tsx scripts/smoke-test.ts",
     "test": "npm run smoke-test",
-    "prod-check": "npm run build && npm audit && npm run test",
-    "security-audit": "npm audit --audit-level=moderate"
+    "test:all": "npm run lint && npm run build && npm run test",
+    "clean": "rm -rf dist node_modules/.vite",
+    "check-updates": "npm outdated",
+    "security-audit": "npm audit --audit-level=moderate",
+    "docker:build": "docker build -t amplify-creator-platform .",
+    "docker:run": "docker-compose up -d",
+    "docker:stop": "docker-compose down"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

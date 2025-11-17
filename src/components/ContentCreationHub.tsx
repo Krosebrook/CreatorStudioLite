@@ -280,10 +280,11 @@ export const ContentCreationHub: React.FC = () => {
     switch (sortBy) {
       case 'recent':
         return b.lastModified.getTime() - a.lastModified.getTime();
-      case 'performance':
+      case 'performance': {
         const aPerf = a.performance ? a.performance.views : 0;
         const bPerf = b.performance ? b.performance.views : 0;
         return bPerf - aPerf;
+      }
       case 'scheduled':
         if (!a.scheduledDate && !b.scheduledDate) return 0;
         if (!a.scheduledDate) return 1;
