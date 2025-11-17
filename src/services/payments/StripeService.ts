@@ -120,7 +120,7 @@ class StripeService {
 
       logger.info('Creating subscription', { userId, planId });
 
-      let customerId = await this.getOrCreateCustomer(userId);
+      const customerId = await this.getOrCreateCustomer(userId);
 
       await this.attachPaymentMethod(paymentMethodId, customerId);
 

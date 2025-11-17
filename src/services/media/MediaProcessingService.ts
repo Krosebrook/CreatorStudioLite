@@ -58,7 +58,7 @@ export class MediaProcessingService {
     limits: any,
     optimizations: string[]
   ): Promise<ProcessedMedia> {
-    let processedUrl = media.url || URL.createObjectURL(media.file);
+    const processedUrl = media.url || URL.createObjectURL(media.file);
     let processedSize = media.size;
     let dimensions = media.dimensions;
 
@@ -96,9 +96,9 @@ export class MediaProcessingService {
     limits: any,
     optimizations: string[]
   ): Promise<ProcessedMedia> {
-    let processedUrl = media.url || URL.createObjectURL(media.file);
-    let processedSize = media.size;
-    let dimensions = media.dimensions;
+    const processedUrl = media.url || URL.createObjectURL(media.file);
+    const processedSize = media.size;
+    const dimensions = media.dimensions;
 
     if (limits.maxVideoSize && media.size > limits.maxVideoSize) {
       optimizations.push(`Video needs compression to fit ${limits.maxVideoSize / (1024 * 1024)}MB limit`);
