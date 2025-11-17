@@ -5,11 +5,17 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Create a mock client if environment variables are not set
 const createSupabaseClient = () => {
+  console.log('[SUPABASE] Initializing client...');
+  console.log('[SUPABASE] URL:', supabaseUrl);
+  console.log('[SUPABASE] Has anon key:', !!supabaseAnonKey);
+
   if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your_supabase_url_here') {
+    console.error('[SUPABASE] Configuration missing!');
     console.warn('Supabase not configured. Please connect to Supabase using the button in the top right.');
     return null;
   }
-  
+
+  console.log('[SUPABASE] Creating client with valid credentials');
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: true,
