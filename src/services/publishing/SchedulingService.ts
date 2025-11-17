@@ -1,6 +1,5 @@
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../utils/logger';
-import { DEFAULT_TIMEZONE } from '../../config/constants';
 
 export interface ScheduleOptions {
   contentId: string;

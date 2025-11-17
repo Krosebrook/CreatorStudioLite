@@ -1,5 +1,4 @@
 import { MIME_TYPES, PLATFORM_LIMITS } from '../../config/constants';
-import { logger } from '../../utils/logger';
 
 export interface MediaFile {
   file: File;

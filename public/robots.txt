@@ -1,0 +1,19 @@
+# Robots.txt for Amplify Creator Platform
+# Production version
+
+User-agent: *
+Allow: /
+
+# Disallow authentication pages
+Disallow: /login
+Disallow: /signup
+Disallow: /auth/
+Disallow: /api/
+
+# Disallow admin and dashboard areas
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /workspace
+
+# Sitemap location
+Sitemap: https://your-domain.blink.new/sitemap.xml

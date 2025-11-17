@@ -1,4 +1,4 @@
-import { Job, JobHandler, JobResult, JobType } from '../types';
+import { Job, JobHandler, JobResult } from '../types';
 import { connectorRegistry } from '../../connectors/base';
 import { SocialConnector, PostData } from '../../connectors/base/SocialConnector';
 

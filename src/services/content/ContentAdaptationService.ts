@@ -1,5 +1,4 @@
 import { PLATFORM_LIMITS, SupportedPlatform } from '../../config/constants';
-import { logger } from '../../utils/logger';
 
 export interface ContentData {
   title?: string;

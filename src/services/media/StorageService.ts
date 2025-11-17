@@ -47,7 +47,7 @@ export class StorageService {
       const folder = options.folder || 'uploads';
       const filePath = `${options.workspaceId}/${folder}/${fileName}`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.BUCKET_NAME)
         .upload(filePath, file, {
           cacheControl: '3600',
