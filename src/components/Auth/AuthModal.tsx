@@ -135,8 +135,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    console.log('[MODAL] handleSignUp called');
 
+    if (!validateForm()) {
+      console.log('[MODAL] Form validation failed');
+      return;
+    }
+
+    console.log('[MODAL] Form validated, starting signup...');
     setLoading(true);
     setError('');
 
@@ -149,9 +155,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`
       };
 
+      console.log('[MODAL] Calling signUp with userData:', userData);
       const { error } = await signUp(formData.email, formData.password, userData);
+      console.log('[MODAL] signUp returned, error:', error);
 
       if (error) {
+        console.error('[MODAL] SignUp error:', error);
         if (error.message.includes('weak_password') || error.message.includes('weak and easy')) {
           setError('Password is too weak. Please choose a more unique password.');
         } else if (error.message.includes('User already registered')) {
@@ -162,10 +171,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           setError(error.message);
         }
       } else {
+        console.log('[MODAL] SignUp successful!');
         setSuccess('Account created successfully! Please check your email to verify your account before signing in.');
         setMode('success');
       }
     } catch (err) {
+      console.error('[MODAL] SignUp exception:', err);
       setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
@@ -174,15 +185,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    console.log('[MODAL] handleSignIn called');
 
+    if (!validateForm()) {
+      console.log('[MODAL] Form validation failed');
+      return;
+    }
+
+    console.log('[MODAL] Form validated, starting signin...');
     setLoading(true);
     setError('');
 
     try {
+      console.log('[MODAL] Calling signIn...');
       const { error } = await signIn(formData.email, formData.password);
+      console.log('[MODAL] signIn returned, error:', error);
 
       if (error) {
+        console.error('[MODAL] SignIn error:', error);
         if (error.message.includes('Invalid login credentials')) {
           setError('Invalid email or password. Please check your credentials and try again.');
         } else if (error.message.includes('Email not confirmed')) {
@@ -191,10 +211,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           setError(error.message);
         }
       } else {
+        console.log('[MODAL] SignIn successful!');
         setSuccess('Signed in successfully!');
         handleClose();
       }
     } catch (err) {
+      console.error('[MODAL] SignIn exception:', err);
       setError((err as Error).message || 'An unexpected error occurred');
     } finally {
       setLoading(false);

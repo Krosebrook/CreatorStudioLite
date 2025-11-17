@@ -143,12 +143,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     password: string,
     metadata?: { name?: string }
   ): Promise<{ error: AuthError | null }> => {
+    console.log('[AUTH] SignUp called with email:', email);
+
     if (!supabase) {
+      console.error('[AUTH] Supabase not configured!');
       return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
     }
 
     try {
       setLoading(true);
+      console.log('[AUTH] Calling supabase.auth.signUp...');
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -159,14 +163,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       });
 
+      console.log('[AUTH] SignUp response:', { data, error });
+
       if (error) {
+        console.error('[AUTH] Sign up failed:', error);
         logger.error('Sign up failed', error);
         return { error };
       }
 
+      console.log('[AUTH] User signed up successfully');
       logger.info('User signed up successfully', { email });
       return { error: null };
     } catch (error) {
+      console.error('[AUTH] Sign up exception:', error);
       logger.error('Sign up error', error as Error);
       return { error: { message: (error as Error).message, name: 'SignUpError', status: 500 } as AuthError };
     } finally {
@@ -175,26 +184,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signIn = async (email: string, password: string): Promise<{ error: AuthError | null }> => {
+    console.log('[AUTH] SignIn called with email:', email);
+
     if (!supabase) {
+      console.error('[AUTH] Supabase not configured!');
       return { error: { message: 'Supabase not configured', name: 'ConfigError', status: 500 } as AuthError };
     }
 
     try {
       setLoading(true);
+      console.log('[AUTH] Calling supabase.auth.signInWithPassword...');
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
+      console.log('[AUTH] SignIn response:', { data, error });
+
       if (error) {
+        console.error('[AUTH] Sign in failed:', error);
         logger.error('Sign in failed', error);
         return { error };
       }
 
+      console.log('[AUTH] User signed in successfully');
       logger.info('User signed in successfully', { email });
       return { error: null };
     } catch (error) {
+      console.error('[AUTH] Sign in exception:', error);
       logger.error('Sign in error', error as Error);
       return { error: { message: (error as Error).message, name: 'SignInError', status: 500 } as AuthError };
     } finally {
