@@ -32,10 +32,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
   },
   server: {
-    // Development server configuration
-    port: 5173,
+    // Development server configuration for Replit
+    port: 5000,
     strictPort: false,
-    host: true,
+    host: '0.0.0.0',
+    allowedHosts: true,
   },
   preview: {
     // Preview server configuration
