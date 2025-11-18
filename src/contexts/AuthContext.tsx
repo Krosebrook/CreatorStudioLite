@@ -109,32 +109,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const { data: existingProfile, error: fetchError } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
         .eq('id', supabaseUser.id)
         .maybeSingle();
 
       if (fetchError) {
         logger.error('Failed to fetch user profile', fetchError);
+        console.error('[AUTH] Profile fetch error:', fetchError);
         return;
       }
 
       if (!existingProfile) {
+        console.log('[AUTH] Creating user profile for:', supabaseUser.id);
         const { error: insertError } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .insert({
-            user_id: supabaseUser.id,
-            display_name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0]
+            id: supabaseUser.id,
+            display_name: supabaseUser.user_metadata?.name || supabaseUser.user_metadata?.first_name || supabaseUser.email?.split('@')[0],
+            avatar_url: supabaseUser.user_metadata?.avatar_url,
+            metadata: supabaseUser.user_metadata || {}
           });
 
         if (insertError) {
           logger.error('Failed to create user profile', insertError);
+          console.error('[AUTH] Profile creation error:', insertError);
         } else {
           logger.info('User profile created', { userId: supabaseUser.id });
+          console.log('[AUTH] Profile created successfully');
         }
+      } else {
+        console.log('[AUTH] User profile already exists');
       }
     } catch (error) {
       logger.error('Error ensuring user profile', error as Error);
+      console.error('[AUTH] Profile ensure error:', error);
     }
   };
 
@@ -278,12 +287,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const { error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .update({
           display_name: updates.name,
+          avatar_url: updates.avatarUrl,
           updated_at: new Date().toISOString()
         })
-        .eq('user_id', user.id);
+        .eq('id', user.id);
 
       if (error) {
         logger.error('Profile update failed', error);

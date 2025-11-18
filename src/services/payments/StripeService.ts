@@ -317,9 +317,9 @@ class StripeService {
 
   private async getOrCreateCustomer(userId: string): Promise<string> {
     const { data: existing } = await supabase
-      .from('profiles')
+      .from('user_profiles')
       .select('stripe_customer_id')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .maybeSingle();
 
     if (existing?.stripe_customer_id) {
@@ -327,9 +327,9 @@ class StripeService {
     }
 
     const { data: userProfile } = await supabase
-      .from('profiles')
+      .from('user_profiles')
       .select('display_name')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .maybeSingle();
 
     const body = new URLSearchParams({
@@ -356,9 +356,9 @@ class StripeService {
     const customer = await response.json();
 
     await supabase
-      .from('profiles')
+      .from('user_profiles')
       .update({ stripe_customer_id: customer.id })
-      .eq('user_id', userId);
+      .eq('id', userId);
 
     return customer.id;
   }
