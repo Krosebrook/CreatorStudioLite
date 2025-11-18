@@ -18,6 +18,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:production": "NODE_ENV=production npm run build",
+    "start": "vite preview --port 5000 --host 0.0.0.0",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",

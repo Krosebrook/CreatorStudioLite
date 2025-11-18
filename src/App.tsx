@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState, useEffect } from 'react';
 import { cn } from './design-system/utils/cn';
 import { LandingPage } from './components/LandingPage';
