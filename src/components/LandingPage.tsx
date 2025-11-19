@@ -5,60 +5,24 @@ import { Card } from '../design-system/components/Card';
 import { AuthModal } from './Auth/AuthModal';
 import { useAuth } from '../contexts/AuthContext';
 import { 
-  ArrowRight, 
   Play, 
   Star, 
   TrendingUp, 
-  Users, 
   Zap, 
-  Shield, 
-  Globe, 
-  Smartphone, 
   BarChart3, 
-  Camera, 
   Sparkles, 
   DollarSign, 
-  Target, 
   CheckCircle, 
-  ArrowUpRight,
   Menu,
   X,
-  ChevronDown,
   Instagram,
   Youtube,
   Twitter,
   Linkedin,
-  Eye,
-  Heart,
-  MessageCircle,
-  Share,
-  Clock,
   Rocket,
   Brain,
-  Palette,
-  Mic,
-  Video,
-  Image,
-  FileText,
   Calendar,
-  PieChart,
-  Award,
-  Briefcase,
-  Coffee,
-  Headphones,
-  Monitor,
-  Layers,
-  Filter,
-  Settings,
-  Download,
-  Upload,
-  RefreshCw,
-  Lock,
-  Unlock,
-  Mail,
-  Phone,
-  MapPin,
-  ExternalLink
+  Mail
 } from 'lucide-react';
 
 interface Testimonial {
@@ -316,8 +280,8 @@ export const LandingPage: React.FC = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                <button onClick={handleSignin}>Sign In</button>
+              <Button variant="ghost" size="sm" onClick={handleSignin}>
+                Sign In
               </Button>
               <Button 
                 variant="primary" 
@@ -368,8 +332,8 @@ export const LandingPage: React.FC = () => {
                 Support
               </a>
               <div className="pt-4 border-t border-neutral-200 space-y-3">
-                <Button variant="ghost" fullWidth>
-                  <button onClick={handleSignin}>Sign In</button>
+                <Button variant="ghost" fullWidth onClick={handleSignin}>
+                  Sign In
                 </Button>
                 <Button 
                   variant="primary" 
