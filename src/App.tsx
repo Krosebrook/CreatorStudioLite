@@ -4,7 +4,7 @@ import { LandingPage } from './components/LandingPage';
 import { CreatorDashboard } from './components/Dashboard';
 import { ContentStudio } from './components/ContentStudio';
 import { CinematicDemoPage } from './pages/CinematicDemo';
-import { LoadingSpinner } from './components/Shared';
+import { LoadingSpinner, PWAInstallPrompt } from './components/Shared';
 import { useAuth } from './contexts/AuthContext';
 import { Play } from 'lucide-react';
 
@@ -32,6 +32,8 @@ function App() {
   
   return (
     <div>
+      <PWAInstallPrompt />
+
       {currentView === 'demo' ? (
         <CinematicDemoPage />
       ) : currentView === 'landing' ? (
