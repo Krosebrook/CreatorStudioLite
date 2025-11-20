@@ -5,3 +5,5 @@ export * from './useWorkspace';
 export * from './useAsync';
 export * from './useScrollPosition';
 export * from './useMediaQuery';
+export * from './useAnimation';
+export * from './useViewport';

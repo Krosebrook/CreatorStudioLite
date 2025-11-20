@@ -4,7 +4,8 @@ import { Sparkles, Volume2, VolumeX, MessageCircle, X } from 'lucide-react';
 
 interface AvatarAssistantProps {
   action?: 'intro' | 'point' | 'celebrate' | 'explain' | 'idle';
-  speech?: string;
+  narration?: string;
+  theme?: 'light' | 'dark' | 'neon';
   variant?: 'realistic' | 'stylized';
   position?: 'bottom-right' | 'bottom-left' | 'center';
   size?: 'sm' | 'md' | 'lg';
@@ -14,7 +15,8 @@ interface AvatarAssistantProps {
 
 export const AvatarAssistant: React.FC<AvatarAssistantProps> = ({
   action = 'idle',
-  speech,
+  narration,
+  theme = 'dark',
   variant = 'stylized',
   position = 'bottom-right',
   size = 'md',
@@ -27,17 +29,17 @@ export const AvatarAssistant: React.FC<AvatarAssistantProps> = ({
   const [currentExpression, setCurrentExpression] = useState<'happy' | 'thinking' | 'excited' | 'neutral'>('happy');
 
   useEffect(() => {
-    if (speech && autoSpeak) {
+    if (narration && autoSpeak) {
       setShowBubble(true);
       setIsSpeaking(true);
 
       const speakTimeout = setTimeout(() => {
         setIsSpeaking(false);
-      }, speech.length * 50);
+      }, narration.length * 50);
 
       return () => clearTimeout(speakTimeout);
     }
-  }, [speech, autoSpeak]);
+  }, [narration, autoSpeak]);
 
   useEffect(() => {
     switch (action) {
@@ -99,12 +101,44 @@ export const AvatarAssistant: React.FC<AvatarAssistantProps> = ({
     }
   };
 
+  const getThemeColors = () => {
+    switch (theme) {
+      case 'light':
+        return {
+          gradient: 'from-blue-400 via-blue-500 to-blue-600',
+          bubble: 'bg-white',
+          text: 'text-gray-900',
+        };
+      case 'dark':
+        return {
+          gradient: 'from-slate-600 via-slate-700 to-slate-800',
+          bubble: 'bg-gray-800 border border-gray-700',
+          text: 'text-white',
+        };
+      case 'neon':
+        return {
+          gradient: 'from-pink-500 via-purple-500 to-cyan-500',
+          bubble: 'bg-black border-2 border-pink-500',
+          text: 'text-cyan-300',
+        };
+      default:
+        return {
+          gradient: 'from-primary-400 via-primary-500 to-primary-600',
+          bubble: 'bg-white',
+          text: 'text-gray-900',
+        };
+    }
+  };
+
+  const themeColors = getThemeColors();
+
   const StylizedAvatar = () => (
     <div className={cn('relative', getSizeClass())}>
       <div className={cn(
         'w-full h-full rounded-full flex items-center justify-center transition-all duration-300',
         getGestureAnimation(),
-        variant === 'stylized' && 'bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600 shadow-2xl'
+        `bg-gradient-to-br ${themeColors.gradient} shadow-2xl`,
+        theme === 'neon' && 'animate-pulse'
       )}>
         <div className="relative w-full h-full flex items-center justify-center">
           <Sparkles className={cn(
@@ -202,12 +236,12 @@ export const AvatarAssistant: React.FC<AvatarAssistantProps> = ({
   return (
     <div className={cn('fixed z-50', getPositionClass())}>
       <div className="relative">
-        {showBubble && speech && (
+        {showBubble && narration && (
           <div className="absolute bottom-full mb-4 left-1/2 transform -translate-x-1/2 animate-slide-up">
-            <div className="relative bg-white rounded-2xl shadow-2xl p-4 max-w-xs">
+            <div className={cn('relative rounded-2xl shadow-2xl p-4 max-w-xs', themeColors.bubble)}>
               <div className="flex items-start space-x-3">
-                <MessageCircle className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-neutral-900 leading-relaxed">{speech}</p>
+                <MessageCircle className={cn('w-5 h-5 flex-shrink-0 mt-0.5', theme === 'neon' ? 'text-pink-500' : 'text-primary-500')} />
+                <p className={cn('text-sm leading-relaxed', themeColors.text)}>{narration}</p>
                 <button
                   onClick={() => setShowBubble(false)}
                   className="p-1 hover:bg-neutral-100 rounded transition-colors flex-shrink-0"

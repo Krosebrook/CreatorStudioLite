@@ -3,7 +3,7 @@ import { cn } from './design-system/utils/cn';
 import { LandingPage } from './components/LandingPage';
 import { CreatorDashboard } from './components/Dashboard';
 import { ContentStudio } from './components/ContentStudio';
-import { CinematicWalkthrough } from './components/CinematicDemo';
+import { CinematicDemoPage } from './pages/CinematicDemo';
 import { LoadingSpinner } from './components/Shared';
 import { useAuth } from './contexts/AuthContext';
 import { Play } from 'lucide-react';
@@ -11,7 +11,6 @@ import { Play } from 'lucide-react';
 function App() {
   const { user, loading } = useAuth();
   const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'studio' | 'demo'>('landing');
-  const [showDemo, setShowDemo] = useState(false);
   
   // Update view based on authentication state
   useEffect(() => {
@@ -33,14 +32,8 @@ function App() {
   
   return (
     <div>
-      {showDemo ? (
-        <CinematicWalkthrough
-          onComplete={() => setShowDemo(false)}
-          onClose={() => setShowDemo(false)}
-          autoPlay={true}
-          showControls={true}
-          style="cinematic"
-        />
+      {currentView === 'demo' ? (
+        <CinematicDemoPage />
       ) : currentView === 'landing' ? (
         <LandingPage />
       ) : currentView === 'dashboard' ? (
@@ -52,10 +45,10 @@ function App() {
       {/* Demo Toggle Button - Remove in production */}
       <div className="fixed top-4 right-4 z-50 flex flex-col space-y-1">
         <button
-          onClick={() => setShowDemo(!showDemo)}
+          onClick={() => setCurrentView('demo')}
           className={cn(
             'px-3 py-1 rounded text-xs transition-colors',
-            showDemo ? 'bg-primary-500 text-white' : 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-lg'
+            currentView === 'demo' ? 'bg-primary-500 text-white' : 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-lg'
           )}
           title="Watch Cinematic Demo"
         >
