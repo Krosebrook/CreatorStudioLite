@@ -4,8 +4,9 @@ import { LandingPage } from './components/LandingPage';
 import { CreatorDashboard } from './components/Dashboard';
 import { ContentStudio } from './components/ContentStudio';
 import { CinematicWalkthrough } from './components/CinematicDemo';
+import { LoadingSpinner } from './components/Shared';
 import { useAuth } from './contexts/AuthContext';
-import { Loader2, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 function App() {
   const { user, loading } = useAuth();
@@ -25,12 +26,7 @@ function App() {
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto">
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
-          </div>
-            <p className="text-neutral-600">Loading Amplify...</p>
-        </div>
+        <LoadingSpinner size="xl" text="Loading Amplify..." />
       </div>
     );
   }
