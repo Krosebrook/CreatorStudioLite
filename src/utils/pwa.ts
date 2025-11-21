@@ -20,7 +20,7 @@ export class PWAManager {
   }
 
   private initialize(): void {
-    if ('serviceWorker' in navigator) {
+    if (this.isServiceWorkerSupported()) {
       this.registerServiceWorker();
     }
 
@@ -36,7 +36,22 @@ export class PWAManager {
     });
   }
 
+  private isServiceWorkerSupported(): boolean {
+    if (typeof window === 'undefined') return false;
+    if (!('serviceWorker' in navigator)) return false;
+
+    const isStackBlitz = window.location.hostname.includes('stackblitz');
+    const isWebContainer = window.location.hostname.includes('webcontainer');
+    const isLocal = window.location.hostname === 'localhost' && import.meta.env.DEV;
+
+    return !isStackBlitz && !isWebContainer && !isLocal;
+  }
+
   private async registerServiceWorker(): Promise<void> {
+    if (!this.isServiceWorkerSupported()) {
+      return;
+    }
+
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
@@ -58,7 +73,7 @@ export class PWAManager {
 
       await navigator.serviceWorker.ready;
     } catch (error) {
-      console.error('Service worker registration failed:', error);
+      console.warn('Service worker not supported in this environment');
     }
   }
 

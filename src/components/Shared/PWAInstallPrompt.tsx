@@ -7,8 +7,22 @@ export function PWAInstallPrompt() {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
+  const [isPWASupported, setIsPWASupported] = useState(false);
 
   useEffect(() => {
+    if (import.meta.env.DEV) {
+      return;
+    }
+
+    const isStackBlitz = window.location.hostname.includes('stackblitz');
+    const isWebContainer = window.location.hostname.includes('webcontainer');
+
+    if (isStackBlitz || isWebContainer) {
+      return;
+    }
+
+    setIsPWASupported(true);
+
     const unsubscribeInstall = pwaManager.onInstallAvailable(() => {
       if (!pwaManager.isInstalled()) {
         setShowInstallPrompt(true);
@@ -28,6 +42,10 @@ export function PWAInstallPrompt() {
       unsubscribeUpdate();
     };
   }, []);
+
+  if (!isPWASupported) {
+    return null;
+  }
 
   const handleInstall = async () => {
     setIsInstalling(true);
