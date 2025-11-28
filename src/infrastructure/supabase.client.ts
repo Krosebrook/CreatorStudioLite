@@ -117,6 +117,8 @@ export class SupabaseDatabaseClient implements IDatabaseClient {
     returning?: string
   ): Promise<Result<T[], DatabaseError>> {
     try {
+      // Type assertion needed: Supabase expects Record<string, unknown> but we have Partial<T>
+      // This is a safe boundary conversion since Partial<T> is compatible with Record<string, unknown>
       const { data: result, error } = await supabase
         .from(table)
         .insert(data as Record<string, unknown>)
@@ -139,6 +141,8 @@ export class SupabaseDatabaseClient implements IDatabaseClient {
     returning?: string
   ): Promise<Result<T, DatabaseError>> {
     try {
+      // Type assertion needed: Supabase expects Record<string, unknown> but we have Partial<T>
+      // This is a safe boundary conversion since Partial<T> is compatible with Record<string, unknown>
       const { data: result, error } = await supabase
         .from(table)
         .update(data as Record<string, unknown>)
@@ -162,6 +166,8 @@ export class SupabaseDatabaseClient implements IDatabaseClient {
     options?: { onConflict?: string; returning?: string }
   ): Promise<Result<T[], DatabaseError>> {
     try {
+      // Type assertion needed: Supabase expects Record<string, unknown> but we have Partial<T>
+      // This is a safe boundary conversion since Partial<T> is compatible with Record<string, unknown>
       const { data: result, error } = await supabase
         .from(table)
         .upsert(

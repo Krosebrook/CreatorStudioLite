@@ -209,11 +209,25 @@ export class ApiClient {
    * Convert DatabaseError to ApiError
    */
   private toApiError(error: DatabaseError): ApiError {
+    const details = this.toDetailsRecord(error.details);
     return {
       code: error.code,
       message: error.message,
-      details: error.details as Record<string, unknown> | undefined,
+      details,
     };
+  }
+
+  /**
+   * Safely convert unknown details to a record
+   */
+  private toDetailsRecord(details: unknown): Record<string, unknown> | undefined {
+    if (details === undefined || details === null) {
+      return undefined;
+    }
+    if (typeof details === 'object' && !Array.isArray(details)) {
+      return details as Record<string, unknown>;
+    }
+    return { value: details };
   }
 
   createResponse<T>(data: T): ApiResponse<T> {
