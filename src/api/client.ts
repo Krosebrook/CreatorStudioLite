@@ -1,10 +1,18 @@
-import { supabase } from '../lib/supabase';
-import { ApiError, ApiResponse } from '../types/common.types';
+import { ApiError, ApiResponse, Result } from '../types/common.types';
+import { databaseClient, IDatabaseClient, QueryOptions, DatabaseError } from '../infrastructure';
+import { isSuccess } from '../shared/result';
 
+/**
+ * API Client that wraps database operations
+ * Provides both promise-throwing methods (legacy) and Result-based methods (new)
+ */
 export class ApiClient {
   private static instance: ApiClient;
+  private db: IDatabaseClient;
 
-  private constructor() {}
+  private constructor(db: IDatabaseClient = databaseClient) {
+    this.db = db;
+  }
 
   public static getInstance(): ApiClient {
     if (!ApiClient.instance) {
@@ -13,208 +21,213 @@ export class ApiClient {
     return ApiClient.instance;
   }
 
+  /**
+   * Query with Result pattern (recommended for new code)
+   */
+  async querySafe<T>(
+    table: string,
+    options: QueryOptions = {}
+  ): Promise<Result<T[], DatabaseError>> {
+    return this.db.query<T>(table, options);
+  }
+
+  /**
+   * Query (legacy - throws on error)
+   */
   async query<T>(
     table: string,
     options: {
       select?: string;
-      filters?: Record<string, any>;
+      filters?: Record<string, unknown>;
       orderBy?: { column: string; ascending?: boolean };
       limit?: number;
       offset?: number;
     } = {}
   ): Promise<T[]> {
-    try {
-      let query = supabase
-        .from(table)
-        .select(options.select || '*');
-
-      if (options.filters) {
-        Object.entries(options.filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            query = query.eq(key, value);
-          }
-        });
-      }
-
-      if (options.orderBy) {
-        query = query.order(options.orderBy.column, {
-          ascending: options.orderBy.ascending ?? false
-        });
-      }
-
-      if (options.limit) {
-        query = query.limit(options.limit);
-      }
-
-      if (options.offset) {
-        query = query.range(options.offset, options.offset + (options.limit || 10) - 1);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        throw this.handleError(error);
-      }
-
-      return (data as T[]) || [];
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.query<T>(table, options);
+    if (isSuccess(result)) {
+      return result.data;
     }
+    throw this.toApiError(result.error);
   }
 
+  /**
+   * Query one with Result pattern (recommended for new code)
+   */
+  async queryOneSafe<T>(
+    table: string,
+    filters: Record<string, unknown>,
+    select?: string
+  ): Promise<Result<T | null, DatabaseError>> {
+    return this.db.queryOne<T>(table, filters, select);
+  }
+
+  /**
+   * Query one (legacy - throws on error)
+   */
   async queryOne<T>(
     table: string,
-    filters: Record<string, any>,
+    filters: Record<string, unknown>,
     select?: string
   ): Promise<T | null> {
-    try {
-      let query = supabase
-        .from(table)
-        .select(select || '*');
-
-      Object.entries(filters).forEach(([key, value]) => {
-        query = query.eq(key, value);
-      });
-
-      const { data, error } = await query.maybeSingle();
-
-      if (error) {
-        throw this.handleError(error);
-      }
-
-      return data as T | null;
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.queryOne<T>(table, filters, select);
+    if (isSuccess(result)) {
+      return result.data;
     }
+    throw this.toApiError(result.error);
   }
 
+  /**
+   * Insert with Result pattern (recommended for new code)
+   */
+  async insertSafe<T>(
+    table: string,
+    data: Partial<T> | Partial<T>[],
+    returning?: string
+  ): Promise<Result<T[], DatabaseError>> {
+    return this.db.insert<T>(table, data, returning);
+  }
+
+  /**
+   * Insert (legacy - throws on error)
+   */
   async insert<T>(
     table: string,
     data: Partial<T> | Partial<T>[],
     options: { returning?: string } = {}
   ): Promise<T[]> {
-    try {
-      const { data: result, error } = await supabase
-        .from(table)
-        .insert(data as any)
-        .select(options.returning || '*');
-
-      if (error) {
-        throw this.handleError(error);
-      }
-
-      return (result as T[]) || [];
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.insert<T>(table, data, options.returning);
+    if (isSuccess(result)) {
+      return result.data;
     }
+    throw this.toApiError(result.error);
   }
 
+  /**
+   * Update with Result pattern (recommended for new code)
+   */
+  async updateSafe<T>(
+    table: string,
+    id: string,
+    data: Partial<T>,
+    returning?: string
+  ): Promise<Result<T, DatabaseError>> {
+    return this.db.update<T>(table, id, data, returning);
+  }
+
+  /**
+   * Update (legacy - throws on error)
+   */
   async update<T>(
     table: string,
     id: string,
     data: Partial<T>,
     options: { returning?: string } = {}
   ): Promise<T> {
-    try {
-      const { data: result, error } = await supabase
-        .from(table)
-        .update(data as any)
-        .eq('id', id)
-        .select(options.returning || '*')
-        .single();
-
-      if (error) {
-        throw this.handleError(error);
-      }
-
-      return result as T;
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.update<T>(table, id, data, options.returning);
+    if (isSuccess(result)) {
+      return result.data;
     }
+    throw this.toApiError(result.error);
   }
 
+  /**
+   * Upsert with Result pattern (recommended for new code)
+   */
+  async upsertSafe<T>(
+    table: string,
+    data: Partial<T> | Partial<T>[],
+    options?: { onConflict?: string; returning?: string }
+  ): Promise<Result<T[], DatabaseError>> {
+    return this.db.upsert<T>(table, data, options);
+  }
+
+  /**
+   * Upsert (legacy - throws on error)
+   */
   async upsert<T>(
     table: string,
     data: Partial<T> | Partial<T>[],
     options: { onConflict?: string; returning?: string } = {}
   ): Promise<T[]> {
-    try {
-      const { data: result, error } = await supabase
-        .from(table)
-        .upsert(data as any, options.onConflict ? { onConflict: options.onConflict } : undefined)
-        .select(options.returning || '*');
-
-      if (error) {
-        throw this.handleError(error);
-      }
-
-      return (result as T[]) || [];
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.upsert<T>(table, data, options);
+    if (isSuccess(result)) {
+      return result.data;
     }
+    throw this.toApiError(result.error);
   }
 
+  /**
+   * Delete with Result pattern (recommended for new code)
+   */
+  async deleteSafe(
+    table: string,
+    filters: Record<string, unknown>
+  ): Promise<Result<void, DatabaseError>> {
+    return this.db.delete(table, filters);
+  }
+
+  /**
+   * Delete (legacy - throws on error)
+   */
   async delete(
     table: string,
-    filters: Record<string, any>
+    filters: Record<string, unknown>
   ): Promise<void> {
-    try {
-      let query = supabase.from(table).delete();
-
-      Object.entries(filters).forEach(([key, value]) => {
-        query = query.eq(key, value);
-      });
-
-      const { error } = await query;
-
-      if (error) {
-        throw this.handleError(error);
-      }
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.delete(table, filters);
+    if (isSuccess(result)) {
+      return;
     }
+    throw this.toApiError(result.error);
   }
 
+  /**
+   * RPC with Result pattern (recommended for new code)
+   */
+  async rpcSafe<T>(
+    functionName: string,
+    params?: Record<string, unknown>
+  ): Promise<Result<T, DatabaseError>> {
+    return this.db.rpc<T>(functionName, params);
+  }
+
+  /**
+   * RPC (legacy - throws on error)
+   */
   async rpc<T>(
     functionName: string,
-    params?: Record<string, any>
+    params?: Record<string, unknown>
   ): Promise<T> {
-    try {
-      const { data, error } = await supabase
-        .rpc(functionName, params);
-
-      if (error) {
-        throw this.handleError(error);
-      }
-
-      return data as T;
-    } catch (error) {
-      throw this.handleError(error);
+    const result = await this.db.rpc<T>(functionName, params);
+    if (isSuccess(result)) {
+      return result.data;
     }
+    throw this.toApiError(result.error);
   }
 
-  private handleError(error: any): ApiError {
-    if (error instanceof Error) {
-      return {
-        code: 'API_ERROR',
-        message: error.message,
-        details: { originalError: error }
-      };
-    }
-
-    if (error && typeof error === 'object') {
-      return {
-        code: error.code || 'UNKNOWN_ERROR',
-        message: error.message || 'An unknown error occurred',
-        details: error.details || {}
-      };
-    }
-
+  /**
+   * Convert DatabaseError to ApiError
+   */
+  private toApiError(error: DatabaseError): ApiError {
+    const details = this.toDetailsRecord(error.details);
     return {
-      code: 'UNKNOWN_ERROR',
-      message: 'An unknown error occurred',
-      details: { error }
+      code: error.code,
+      message: error.message,
+      details,
     };
+  }
+
+  /**
+   * Safely convert unknown details to a record
+   */
+  private toDetailsRecord(details: unknown): Record<string, unknown> | undefined {
+    if (details === undefined || details === null) {
+      return undefined;
+    }
+    if (typeof details === 'object' && !Array.isArray(details)) {
+      return details as Record<string, unknown>;
+    }
+    return { value: details };
   }
 
   createResponse<T>(data: T): ApiResponse<T> {

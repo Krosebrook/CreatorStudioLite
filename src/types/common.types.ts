@@ -1,5 +1,9 @@
 // Common types used across the application
 
+// Re-export Result types for convenience
+export type { Result, Success, Failure } from '../shared/result';
+export { success, failure, isSuccess, isFailure } from '../shared/result';
+
 export type UUID = string;
 export type Timestamp = string;
 
@@ -34,7 +38,7 @@ export interface ApiResponse<T> {
 export interface ApiError {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface DateRange {
