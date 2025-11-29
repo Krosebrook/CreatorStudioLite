@@ -32,7 +32,7 @@ export class JobQueue {
       priority?: JobPriority;
       scheduledFor?: Date;
       maxAttempts?: number;
-      metadata?: Record<string, any>;
+      metadata?: Record<string, unknown>;
     }
   ): Promise<Job<T>> {
     const job: Job<T> = {

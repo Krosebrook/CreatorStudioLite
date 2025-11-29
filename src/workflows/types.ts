@@ -24,7 +24,7 @@ export enum JobPriority {
   URGENT = 3
 }
 
-export interface Job<T = any> {
+export interface Job<T = unknown> {
   id: string;
   type: JobType;
   status: JobStatus;
@@ -40,18 +40,18 @@ export interface Job<T = any> {
   startedAt?: Date;
   completedAt?: Date;
   error?: string;
-  result?: any;
-  metadata?: Record<string, any>;
+  result?: unknown;
+  metadata?: Record<string, unknown>;
 }
 
-export interface JobResult<T = any> {
+export interface JobResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
   shouldRetry?: boolean;
 }
 
-export interface JobHandler<T = any, R = any> {
+export interface JobHandler<T = unknown, R = unknown> {
   handle(job: Job<T>): Promise<JobResult<R>>;
   onSuccess?(job: Job<T>, result: JobResult<R>): Promise<void>;
   onFailure?(job: Job<T>, error: Error): Promise<void>;

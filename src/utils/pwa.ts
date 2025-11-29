@@ -1,3 +1,22 @@
+// Browser-specific Navigator extension interfaces
+interface NavigatorStandalone {
+  standalone?: boolean;
+}
+
+interface NetworkInformation {
+  type?: string;
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+}
+
+interface NavigatorConnection {
+  connection?: NetworkInformation;
+  mozConnection?: NetworkInformation;
+  webkitConnection?: NetworkInformation;
+}
+
 export interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -100,7 +119,7 @@ export class PWAManager {
   public isInstalled(): boolean {
     return (
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true ||
+      (window.navigator as unknown as NavigatorStandalone).standalone === true ||
       document.referrer.includes('android-app://')
     );
   }
@@ -230,7 +249,8 @@ export class PWAManager {
     rtt?: number;
     saveData?: boolean;
   } {
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    const nav = navigator as unknown as NavigatorConnection;
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection;
 
     return {
       online: navigator.onLine,

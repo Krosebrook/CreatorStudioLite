@@ -10,7 +10,7 @@ export interface UsageRecord {
   userId: string;
   resourceType: ResourceType;
   amount: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
 }
 
@@ -48,7 +48,7 @@ class UsageTrackingService {
     userId: string,
     resourceType: ResourceType,
     amount: number = 1,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     try {
       logger.info('Tracking usage', { workspaceId, resourceType, amount });
