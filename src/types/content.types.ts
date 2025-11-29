@@ -16,7 +16,7 @@ export interface Content {
   captions: Record<Platform, string>;
   hashtags: string[];
   mentions: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -32,7 +32,7 @@ export interface MediaFile {
   duration?: number;
   thumbnail_url?: string;
   processing_status: ProcessingStatus;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
 }
 
@@ -63,7 +63,7 @@ export interface PublishingSchedule {
   error_message?: string;
   retry_count: number;
   platform_post_ids: Record<Platform, string>;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -78,12 +78,12 @@ export interface ContentTemplate {
   description?: string;
   content_type: ContentType;
   platforms: Platform[];
-  template_structure: Record<string, any>;
+  template_structure: Record<string, unknown>;
   thumbnail_url?: string;
   usage_count: number;
   is_public: boolean;
   tags: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }

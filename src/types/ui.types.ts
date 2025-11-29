@@ -24,5 +24,5 @@ export interface SortState {
 }
 
 export interface FilterState {
-  [key: string]: any;
+  [key: string]: unknown;
 }

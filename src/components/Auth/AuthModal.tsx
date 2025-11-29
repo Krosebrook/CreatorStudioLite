@@ -17,8 +17,7 @@ import {
   Users,
   Briefcase,
   Rocket,
-  Shield,
-  Zap
+  Shield
 } from 'lucide-react';
 
 interface AuthModalProps {

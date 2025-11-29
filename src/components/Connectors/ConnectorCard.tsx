@@ -17,7 +17,7 @@ interface ConnectorCardProps {
 }
 
 export const ConnectorCard: React.FC<ConnectorCardProps> = ({
-  id,
+  id: _id,
   name,
   icon,
   status,

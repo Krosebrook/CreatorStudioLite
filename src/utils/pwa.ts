@@ -72,7 +72,7 @@ export class PWAManager {
       });
 
       await navigator.serviceWorker.ready;
-    } catch (error) {
+    } catch {
       console.warn('Service worker not supported in this environment');
     }
   }

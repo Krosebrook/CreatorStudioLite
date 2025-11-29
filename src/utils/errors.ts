@@ -16,14 +16,14 @@ export class AppError extends Error {
   public readonly code: ErrorCode;
   public readonly statusCode: number;
   public readonly isOperational: boolean;
-  public readonly context?: Record<string, any>;
+  public readonly context?: Record<string, unknown>;
 
   constructor(
     message: string,
     code: ErrorCode = ErrorCode.INTERNAL_ERROR,
     statusCode: number = 500,
     isOperational: boolean = true,
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ) {
     super(message);
     this.code = code;
@@ -37,43 +37,43 @@ export class AppError extends Error {
 }
 
 export class AuthenticationError extends AppError {
-  constructor(message: string = 'Authentication failed', context?: Record<string, any>) {
+  constructor(message: string = 'Authentication failed', context?: Record<string, unknown>) {
     super(message, ErrorCode.AUTHENTICATION_ERROR, 401, true, context);
   }
 }
 
 export class AuthorizationError extends AppError {
-  constructor(message: string = 'Not authorized', context?: Record<string, any>) {
+  constructor(message: string = 'Not authorized', context?: Record<string, unknown>) {
     super(message, ErrorCode.AUTHORIZATION_ERROR, 403, true, context);
   }
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string = 'Validation failed', context?: Record<string, any>) {
+  constructor(message: string = 'Validation failed', context?: Record<string, unknown>) {
     super(message, ErrorCode.VALIDATION_ERROR, 400, true, context);
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(resource: string, context?: Record<string, any>) {
+  constructor(resource: string, context?: Record<string, unknown>) {
     super(`${resource} not found`, ErrorCode.NOT_FOUND, 404, true, context);
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string = 'Resource conflict', context?: Record<string, any>) {
+  constructor(message: string = 'Resource conflict', context?: Record<string, unknown>) {
     super(message, ErrorCode.CONFLICT, 409, true, context);
   }
 }
 
 export class RateLimitError extends AppError {
-  constructor(message: string = 'Rate limit exceeded', context?: Record<string, any>) {
+  constructor(message: string = 'Rate limit exceeded', context?: Record<string, unknown>) {
     super(message, ErrorCode.RATE_LIMIT_EXCEEDED, 429, true, context);
   }
 }
 
 export class ConnectorError extends AppError {
-  constructor(message: string, connectorId?: string, context?: Record<string, any>) {
+  constructor(message: string, connectorId?: string, context?: Record<string, unknown>) {
     super(
       message,
       ErrorCode.CONNECTOR_ERROR,
@@ -85,7 +85,7 @@ export class ConnectorError extends AppError {
 }
 
 export class ExternalAPIError extends AppError {
-  constructor(service: string, message: string, context?: Record<string, any>) {
+  constructor(service: string, message: string, context?: Record<string, unknown>) {
     super(
       `${service}: ${message}`,
       ErrorCode.EXTERNAL_API_ERROR,
@@ -104,7 +104,7 @@ export function getErrorResponse(error: unknown): {
   code: ErrorCode;
   message: string;
   statusCode: number;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 } {
   if (isAppError(error)) {
     return {

@@ -32,7 +32,7 @@ export interface ContentAnalytics {
   peak_engagement_time?: Timestamp;
   snapshot_date: string;
   collected_at: Timestamp;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -89,7 +89,7 @@ export interface RevenueInsight {
   tax_amount: number;
   invoice_id?: string;
   payment_status: PaymentStatus;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }

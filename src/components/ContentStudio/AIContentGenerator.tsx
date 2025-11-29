@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { cn } from '../../design-system/utils/cn';
 import { Button } from '../../design-system/components/Button';
 import { Card } from '../../design-system/components/Card';
@@ -6,58 +6,20 @@ import { Input } from '../../design-system/components/Input';
 import { TextArea } from '../../design-system/components/TextArea';
 import { 
   Sparkles, 
-  Wand2, 
   Copy, 
   RefreshCw, 
-  ThumbsUp, 
-  ThumbsDown,
-  TrendingUp,
   Target,
-  Users,
   Hash,
-  AtSign,
-  MapPin,
   Clock,
   Zap,
   Brain,
   Lightbulb,
   Rocket,
   Star,
-  Award,
-  Globe,
-  Smartphone,
-  Monitor,
-  Camera,
-  Video,
-  Mic,
-  FileText,
-  Image,
-  Calendar,
-  BarChart3,
-  DollarSign,
   Heart,
-  MessageCircle,
-  Share,
-  Eye,
-  Play,
-  Pause,
-  Volume2,
-  Settings,
-  Filter,
-  Sliders,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronUp,
-  ArrowRight,
-  Check,
-  X,
-  Plus,
-  Minus,
-  RotateCcw,
-  Download,
-  Upload,
-  Link,
-  ExternalLink
+  FileText,
+  Video,
+  Check
 } from 'lucide-react';
 
 interface AIPrompt {

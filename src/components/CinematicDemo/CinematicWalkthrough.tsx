@@ -45,12 +45,12 @@ interface CinematicWalkthroughProps {
 export const CinematicWalkthrough: React.FC<CinematicWalkthroughProps> = ({
   onComplete,
   onClose,
-  autoPlay = false,
+  autoPlay: _autoPlay = false,
   showControls = true,
   theme = 'dark',
 }) => {
   const [isMuted, setIsMuted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [_isFullscreen, setIsFullscreen] = useState(false);
   const viewport = useViewport();
 
   const scenes: Scene[] = [
