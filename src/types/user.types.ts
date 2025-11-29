@@ -26,7 +26,7 @@ export interface UserProfile {
   social_links: SocialLinks;
   preferences: UserPreferences;
   stripe_customer_id?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -74,7 +74,7 @@ export interface Subscription {
   canceled_at?: Timestamp;
   trial_start?: Timestamp;
   trial_end?: Timestamp;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -89,7 +89,7 @@ export interface UsageTracking {
   amount: number;
   period_start: Timestamp;
   period_end: Timestamp;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
 }
 

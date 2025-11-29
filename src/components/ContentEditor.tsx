@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { cn } from '../design-system/utils/cn';
 import { Input } from '../design-system/components/Input';
 import { TextArea } from '../design-system/components/TextArea';
@@ -11,25 +11,13 @@ import {
   Send, 
   Clock, 
   Eye, 
-  Wand2, 
   Hash, 
-  AtSign, 
   MapPin, 
-  Users, 
   Target,
   TrendingUp,
-  Calendar,
-  Globe,
-  Smartphone,
-  Monitor,
-  Tablet,
-  Zap,
-  BarChart3,
   DollarSign,
-  Star,
   AlertTriangle,
   CheckCircle2,
-  Copy,
   RefreshCw,
   Sparkles
 } from 'lucide-react';
@@ -145,7 +133,6 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [previewMode, setPreviewMode] = useState<string | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
   const [contentScore, setContentScore] = useState<number>(0);
   const [viralPrediction, setViralPrediction] = useState<number>(0);
@@ -178,67 +165,67 @@ export const ContentEditor: React.FC<ContentEditorProps> = ({
 
   // Content scoring and viral prediction
   useEffect(() => {
-    calculateContentScore();
-    predictViralPotential();
+    const calculateScore = () => {
+      let score = 0;
+      
+      // Title quality (0-25 points)
+      if (content.title.length > 10) score += 10;
+      if (content.title.length > 30) score += 10;
+      if (/[!?]/.test(content.title)) score += 5;
+      
+      // Description quality (0-25 points)
+      if (content.description.length > 50) score += 10;
+      if (content.description.length > 200) score += 10;
+      if (content.callToAction) score += 5;
+      
+      // Media presence (0-20 points)
+      if (content.media.length > 0) score += 10;
+      if (content.media.length > 1) score += 5;
+      if (content.media.some(m => m.type === 'video')) score += 5;
+      
+      // Platform optimization (0-15 points)
+      if (content.platforms.length > 0) score += 5;
+      if (content.platforms.length > 2) score += 5;
+      if (content.hashtags.length > 3) score += 5;
+      
+      // Engagement factors (0-15 points)
+      if (content.hashtags.length > 0) score += 5;
+      if (content.mentions.length > 0) score += 5;
+      if (content.location) score += 5;
+      
+      setContentScore(Math.min(score, 100));
+    };
+
+    const predictPotential = () => {
+      let potential = 0;
+      
+      // Trending elements
+      const trendingHashtags = ['viral', 'trending', 'fyp', 'explore'];
+      const hasTrendingTags = content.hashtags.some(tag => 
+        trendingHashtags.some(trending => tag.toLowerCase().includes(trending))
+      );
+      if (hasTrendingTags) potential += 20;
+      
+      // Video content bonus
+      if (content.media.some(m => m.type === 'video')) potential += 25;
+      
+      // Multi-platform strategy
+      if (content.platforms.length > 2) potential += 15;
+      
+      // Engagement hooks
+      if (content.title.includes('?') || content.description.includes('?')) potential += 10;
+      if (content.callToAction) potential += 10;
+      
+      // Optimal posting elements
+      if (content.hashtags.length >= 5 && content.hashtags.length <= 15) potential += 10;
+      if (content.description.length >= 100) potential += 10;
+      
+      setViralPrediction(Math.min(potential, 100));
+    };
+
+    calculateScore();
+    predictPotential();
   }, [content]);
-
-  const calculateContentScore = () => {
-    let score = 0;
-    
-    // Title quality (0-25 points)
-    if (content.title.length > 10) score += 10;
-    if (content.title.length > 30) score += 10;
-    if (/[!?]/.test(content.title)) score += 5;
-    
-    // Description quality (0-25 points)
-    if (content.description.length > 50) score += 10;
-    if (content.description.length > 200) score += 10;
-    if (content.callToAction) score += 5;
-    
-    // Media presence (0-20 points)
-    if (content.media.length > 0) score += 10;
-    if (content.media.length > 1) score += 5;
-    if (content.media.some(m => m.type === 'video')) score += 5;
-    
-    // Platform optimization (0-15 points)
-    if (content.platforms.length > 0) score += 5;
-    if (content.platforms.length > 2) score += 5;
-    if (content.hashtags.length > 3) score += 5;
-    
-    // Engagement factors (0-15 points)
-    if (content.hashtags.length > 0) score += 5;
-    if (content.mentions.length > 0) score += 5;
-    if (content.location) score += 5;
-    
-    setContentScore(Math.min(score, 100));
-  };
-
-  const predictViralPotential = () => {
-    let potential = 0;
-    
-    // Trending elements
-    const trendingHashtags = ['viral', 'trending', 'fyp', 'explore'];
-    const hasTrendingTags = content.hashtags.some(tag => 
-      trendingHashtags.some(trending => tag.toLowerCase().includes(trending))
-    );
-    if (hasTrendingTags) potential += 20;
-    
-    // Video content bonus
-    if (content.media.some(m => m.type === 'video')) potential += 25;
-    
-    // Multi-platform strategy
-    if (content.platforms.length > 2) potential += 15;
-    
-    // Engagement hooks
-    if (content.title.includes('?') || content.description.includes('?')) potential += 10;
-    if (content.callToAction) potential += 10;
-    
-    // Optimal posting elements
-    if (content.hashtags.length >= 5 && content.hashtags.length <= 15) potential += 10;
-    if (content.description.length >= 100) potential += 10;
-    
-    setViralPrediction(Math.min(potential, 100));
-  };
 
   const handleAIGenerate = async (prompt: string, type: 'title' | 'description' | 'hashtags') => {
     setIsGeneratingAI(true);

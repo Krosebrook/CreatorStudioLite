@@ -9,7 +9,7 @@ export interface Workspace {
   owner_id: UUID;
   plan: WorkspacePlan;
   settings: WorkspaceSettings;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -34,7 +34,7 @@ export interface WorkspaceMember {
   invited_by: UUID;
   joined_at?: Timestamp;
   last_active_at?: Timestamp;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -60,7 +60,7 @@ export interface WorkspaceInvite {
   expires_at: Timestamp;
   accepted_at?: Timestamp;
   token: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
 }
 
@@ -71,7 +71,7 @@ export interface Team {
   description?: string;
   members: UUID[];
   permissions: WorkspacePermission[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }

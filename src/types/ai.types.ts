@@ -18,7 +18,7 @@ export interface ContentIdea {
   competition_level: CompetitionLevel;
   status: ContentIdeaStatus;
   used_in_content_id?: UUID;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -62,7 +62,7 @@ export interface Caption {
   status: CaptionStatus;
   used_at?: Timestamp;
   variants: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -91,7 +91,7 @@ export interface Hashtag {
   best_time_to_use?: string;
   complementary_tags: string[];
   last_analyzed_at: Timestamp;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -114,9 +114,9 @@ export interface BrandVoiceProfile {
   preferred_hashtags: string[];
   brand_values: string[];
   sample_content: string[];
-  engagement_patterns: Record<string, any>;
-  audience_response: Record<string, any>;
-  metadata: Record<string, any>;
+  engagement_patterns: Record<string, unknown>;
+  audience_response: Record<string, unknown>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
@@ -151,7 +151,7 @@ export interface ViralPrediction {
   actual_shares?: number;
   actual_reach?: number;
   prediction_accuracy?: number;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
