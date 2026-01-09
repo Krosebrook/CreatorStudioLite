@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { uploadProfilePicture, validateProfilePicture } from '../../../api/user';
-import { Button } from '../../design-system/components/Button';
-import { Card } from '../../design-system/components/Card';
+import React, { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { uploadProfilePicture, validateProfilePicture } from '../../api/user';
+import { Button } from '../design-system/components/Button';
+import { Card } from '../design-system/components/Card';
 
 interface UserProfileProps {
   className?: string;
@@ -41,12 +41,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
       return;
     }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Create preview using object URL (more memory-efficient than data URL)
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
   };
 
   const handleUpload = async () => {
@@ -95,6 +92,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
   };
 
   const handleCancel = () => {
+    // Revoke object URL to free memory
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
     setPreviewUrl(null);
     setError(null);
     setSuccess(false);
@@ -102,6 +103,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
       fileInputRef.current.value = '';
     }
   };
+
+  // Cleanup object URL on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   if (!user) {
     return (
@@ -125,7 +135,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className = '' }) => {
           <div className="flex items-center justify-center">
             <div className="relative">
               <img
-                src={previewUrl || user.avatarUrl || 'https://via.placeholder.com/150'}
+                src={previewUrl || user.avatarUrl || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Crect fill="%23ddd" width="150" height="150"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="16" dy="80" font-weight="bold" x="50%25" y="45%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E'}
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-4 border-neutral-200"
               />

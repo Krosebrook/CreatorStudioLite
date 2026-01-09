@@ -1,5 +1,6 @@
 import { supabase } from '../src/lib/supabase';
 import { storageService } from '../src/services/media/StorageService';
+import { logger } from '../src/utils/logger';
 
 // File size limit: 5MB for profile pictures
 const MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
@@ -62,7 +63,8 @@ export async function uploadProfilePicture(
   }
 
   try {
-    // Upload to storage service
+    // Upload to storage service using userId for user-specific folder
+    // Note: Using userId as folder identifier for user-specific avatars
     const uploadResult = await storageService.uploadFile(file, {
       workspaceId: userId,
       userId: userId,
@@ -89,7 +91,7 @@ export async function uploadProfilePicture(
 
       if (updateError) {
         // Log error but don't fail - file is uploaded
-        console.error('Failed to update user profile:', updateError);
+        logger.error('Failed to update user profile', updateError);
       }
     }
 
