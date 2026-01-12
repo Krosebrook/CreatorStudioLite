@@ -1,0 +1,827 @@
+openapi: 3.0.3
+info:
+  title: Amplify Creator Platform - AI Content Generation API
+  description: |
+    AI-powered content generation and optimization endpoints for the Amplify Creator Platform.
+    
+    ## Authentication
+    All endpoints require authentication via Supabase JWT token:
+    ```
+    Authorization: Bearer <supabase_access_token>
+    ```
+    
+    ## Features
+    - Viral content idea generation
+    - Platform-optimized caption creation
+    - Brand voice learning and application
+    - Hashtag research and trending analysis
+    - Viral potential prediction
+    - A/B testing variant generation
+    
+    ## Rate Limits
+    - 60 requests per minute per user
+    - 100,000 tokens per minute per workspace
+    - $100 daily cost limit per workspace (configurable)
+    
+  version: 2.0.0
+  contact:
+    name: API Support
+    email: api-support@amplifycreator.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.amplifycreator.com/v2
+    description: Production server
+  - url: https://staging-api.amplifycreator.com/v2
+    description: Staging server
+
+tags:
+  - name: Content Ideas
+    description: AI-powered content idea generation
+  - name: Captions
+    description: Smart caption generation and optimization
+  - name: Hashtags
+    description: Hashtag research and trending analysis
+  - name: Brand Voice
+    description: Brand voice learning and management
+  - name: Viral Prediction
+    description: Content viral potential analysis
+  - name: Usage
+    description: AI usage tracking and analytics
+
+paths:
+  /ai/content-ideas:
+    post:
+      tags:
+        - Content Ideas
+      summary: Generate content ideas
+      description: Generate viral content ideas using AI based on niche and target audience
+      operationId: generateContentIdeas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateContentIdeasRequest'
+      responses:
+        '200':
+          description: Content ideas generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentIdeasResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/captions:
+    post:
+      tags:
+        - Captions
+      summary: Generate caption
+      description: Generate platform-optimized caption with brand voice
+      operationId: generateCaption
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateCaptionRequest'
+      responses:
+        '200':
+          description: Caption generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaptionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/hashtags:
+    post:
+      tags:
+        - Hashtags
+      summary: Generate hashtags
+      description: Generate trending hashtags for specific niche and platform
+      operationId: generateHashtags
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateHashtagsRequest'
+      responses:
+        '200':
+          description: Hashtags generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HashtagsResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/viral-prediction:
+    post:
+      tags:
+        - Viral Prediction
+      summary: Predict viral potential
+      description: Analyze and predict viral potential of content using AI + statistical analysis
+      operationId: predictViralPotential
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViralPredictionRequest'
+      responses:
+        '200':
+          description: Prediction generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViralPredictionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/brand-voice:
+    get:
+      tags:
+        - Brand Voice
+      summary: List brand voice profiles
+      description: Get all brand voice profiles for workspace
+      operationId: listBrandVoiceProfiles
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceIdParam'
+      responses:
+        '200':
+          description: Brand voice profiles retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandVoiceProfilesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Brand Voice
+      summary: Create brand voice profile
+      description: Analyze content and create brand voice profile
+      operationId: createBrandVoiceProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBrandVoiceRequest'
+      responses:
+        '201':
+          description: Brand voice profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandVoiceProfileResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/brand-voice/{id}:
+    get:
+      tags:
+        - Brand Voice
+      summary: Get brand voice profile
+      description: Get specific brand voice profile by ID
+      operationId: getBrandVoiceProfile
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Brand voice profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandVoiceProfileResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /ai/usage/stats:
+    get:
+      tags:
+        - Usage
+      summary: Get usage statistics
+      description: Get AI usage statistics for workspace
+      operationId: getUsageStats
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/WorkspaceIdParam'
+        - name: start_date
+          in: query
+          description: Start date for statistics
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: End date for statistics
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Usage statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageStatsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: Resource ID
+      schema:
+        type: string
+        format: uuid
+
+    WorkspaceIdParam:
+      name: workspace_id
+      in: query
+      required: true
+      description: Workspace ID
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    GenerateContentIdeasRequest:
+      type: object
+      required:
+        - workspace_id
+        - user_id
+        - niche
+        - target_audience
+      properties:
+        workspace_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        niche:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "fitness"
+        target_audience:
+          type: object
+          properties:
+            age_range:
+              type: string
+              example: "25-35"
+            gender:
+              type: array
+              items:
+                type: string
+              example: ["male", "female"]
+            interests:
+              type: array
+              items:
+                type: string
+              example: ["health", "wellness", "workout"]
+            locations:
+              type: array
+              items:
+                type: string
+              example: ["US", "UK", "Canada"]
+        content_types:
+          type: array
+          items:
+            type: string
+            enum: [post, reel, video, story, carousel]
+          default: [post, reel, video]
+        count:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 5
+
+    GenerateCaptionRequest:
+      type: object
+      required:
+        - workspace_id
+        - user_id
+        - platform
+        - topic
+      properties:
+        workspace_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        content_idea_id:
+          type: string
+          format: uuid
+        platform:
+          type: string
+          enum: [instagram, tiktok, youtube, linkedin, twitter, facebook]
+        brand_voice_id:
+          type: string
+          format: uuid
+        topic:
+          type: string
+          minLength: 1
+          maxLength: 200
+        context:
+          type: string
+          maxLength: 1000
+
+    GenerateHashtagsRequest:
+      type: object
+      required:
+        - workspace_id
+        - user_id
+        - niche
+        - platform
+      properties:
+        workspace_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        niche:
+          type: string
+          minLength: 1
+          maxLength: 100
+        platform:
+          type: string
+          enum: [instagram, tiktok, youtube, linkedin, twitter, facebook]
+        count:
+          type: integer
+          minimum: 1
+          maximum: 30
+          default: 10
+
+    ViralPredictionRequest:
+      type: object
+      required:
+        - workspace_id
+        - user_id
+        - content_type
+        - platform
+        - title
+        - description
+        - niche
+      properties:
+        workspace_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        content_idea_id:
+          type: string
+          format: uuid
+        content_type:
+          type: string
+          enum: [post, reel, video, story, carousel]
+        platform:
+          type: string
+          enum: [instagram, tiktok, youtube, linkedin, twitter, facebook]
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        niche:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    CreateBrandVoiceRequest:
+      type: object
+      required:
+        - workspace_id
+        - user_id
+        - name
+      properties:
+        workspace_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        sample_content_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        min_samples:
+          type: integer
+          minimum: 5
+          maximum: 50
+          default: 10
+
+    ContentIdea:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspace_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        content_type:
+          type: string
+          enum: [post, reel, video, story, carousel]
+        niche:
+          type: string
+        viral_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        engagement_prediction:
+          type: integer
+          minimum: 0
+          maximum: 100
+        optimal_platforms:
+          type: array
+          items:
+            type: string
+        trending_topics:
+          type: array
+          items:
+            type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        search_volume:
+          type: integer
+        competition_level:
+          type: string
+          enum: [low, medium, high]
+        status:
+          type: string
+          enum: [draft, approved, used, archived]
+        created_at:
+          type: string
+          format: date-time
+
+    Caption:
+      type: object
+      properties:
+        caption:
+          type: string
+        platform:
+          type: string
+        tone:
+          type: string
+          enum: [professional, casual, funny, inspirational, educational]
+        style:
+          type: string
+          enum: [storytelling, direct, question, listicle]
+        engagement_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        click_through_prediction:
+          type: number
+          format: float
+        save_rate_prediction:
+          type: number
+          format: float
+        share_rate_prediction:
+          type: number
+          format: float
+        variants:
+          type: array
+          items:
+            type: string
+        character_count:
+          type: integer
+        word_count:
+          type: integer
+        emoji_count:
+          type: integer
+        hashtag_count:
+          type: integer
+
+    ViralPrediction:
+      type: object
+      properties:
+        viral_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        predicted_views:
+          type: integer
+        predicted_engagement:
+          type: integer
+        predicted_shares:
+          type: integer
+        predicted_reach:
+          type: integer
+        overall_confidence:
+          type: integer
+          minimum: 0
+          maximum: 100
+        positive_factors:
+          type: array
+          items:
+            type: string
+        negative_factors:
+          type: array
+          items:
+            type: string
+        improvement_suggestions:
+          type: array
+          items:
+            type: string
+
+    BrandVoiceProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspace_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        is_default:
+          type: boolean
+        tone:
+          type: array
+          items:
+            type: string
+        style:
+          type: array
+          items:
+            type: string
+        personality_traits:
+          type: array
+          items:
+            type: string
+        vocabulary_level:
+          type: string
+          enum: [simple, medium, advanced]
+        sentence_structure:
+          type: string
+          enum: [short, medium, long, varied]
+        emoji_usage:
+          type: string
+          enum: [none, light, moderate, heavy]
+        key_phrases:
+          type: array
+          items:
+            type: string
+        preferred_hashtags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+
+    UsageStats:
+      type: object
+      properties:
+        total_requests:
+          type: integer
+        total_tokens:
+          type: integer
+        total_cost:
+          type: number
+          format: float
+        by_provider:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              requests:
+                type: integer
+              tokens:
+                type: integer
+              cost:
+                type: number
+        by_operation:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              requests:
+                type: integer
+              tokens:
+                type: integer
+              cost:
+                type: number
+        avg_response_time:
+          type: integer
+        success_rate:
+          type: number
+          format: float
+        cache_hit_rate:
+          type: number
+          format: float
+
+    ContentIdeasResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentIdea'
+
+    CaptionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Caption'
+
+    HashtagsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: string
+
+    ViralPredictionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ViralPrediction'
+
+    BrandVoiceProfileResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BrandVoiceProfile'
+
+    BrandVoiceProfilesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrandVoiceProfile'
+
+    UsageStatsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UsageStats'
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+  responses:
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: Authentication required
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: NOT_FOUND
+              message: Resource not found
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Invalid request data
+              details:
+                field: niche
+                issue: Required field missing
+
+    RateLimitError:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: Rate limit exceeded. Please try again later.
+              details:
+                retry_after: 60
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: INTERNAL_ERROR
+              message: An unexpected error occurred

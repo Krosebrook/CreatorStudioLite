@@ -1,5 +1,8 @@
 import { UUID, Timestamp, Platform, ContentType } from './common.types';
 
+// Re-export AI provider types
+export * from './ai-provider.types';
+
 export interface ContentIdea {
   id: UUID;
   workspace_id: UUID;

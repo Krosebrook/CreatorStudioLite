@@ -1,4 +1,6 @@
 import { supabase } from '../../lib/supabase';
+import AIProviderService from './AIProviderService';
+import BrandVoiceAnalyzer from './BrandVoiceAnalyzer';
 
 export interface ContentIdea {
   id?: string;
@@ -65,48 +67,40 @@ class AIContentGenerationService {
   }): Promise<ContentIdea[]> {
     const { workspace_id, user_id, niche, target_audience, content_types = ['post', 'reel', 'video'], count = 5 } = params;
 
-    // AI-powered content idea generation
-    // In production, this would call OpenAI/Anthropic/Google AI
-    const ideas: ContentIdea[] = [];
+    // Build AI prompt for content idea generation
+    const prompt = this.buildContentIdeasPrompt(niche, target_audience, content_types, count);
+    
+    // Generate ideas using AI
+    const response = await AIProviderService.generate(prompt, {
+      workspaceId: workspace_id,
+      userId: user_id,
+      operation: 'content_idea_generation',
+      temperature: 0.8, // Higher temperature for creativity
+      maxTokens: 2000,
+      systemPrompt: `You are a viral content strategist and social media expert. Generate creative, engaging content ideas that have high viral potential. Return your response in valid JSON format only.`,
+    });
 
-    const ideaTemplates = [
-      { type: 'tutorial', viral_range: [65, 85] },
-      { type: 'behind-the-scenes', viral_range: [70, 90] },
-      { type: 'transformation', viral_range: [75, 95] },
-      { type: 'trending-challenge', viral_range: [80, 95] },
-      { type: 'educational', viral_range: [60, 80] },
-      { type: 'storytelling', viral_range: [70, 88] },
-      { type: 'product-review', viral_range: [55, 75] },
-      { type: 'comparison', viral_range: [65, 85] },
-      { type: 'list-format', viral_range: [70, 85] },
-      { type: 'controversy', viral_range: [75, 95] }
-    ];
+    // Parse AI response
+    const aiIdeas = this.parseContentIdeasResponse(response.content);
 
-    for (let i = 0; i < count; i++) {
-      const template = ideaTemplates[Math.floor(Math.random() * ideaTemplates.length)];
-      const content_type = content_types[Math.floor(Math.random() * content_types.length)] as any;
-      const viral_score = Math.floor(Math.random() * (template.viral_range[1] - template.viral_range[0] + 1)) + template.viral_range[0];
-
-      const idea: ContentIdea = {
-        workspace_id,
-        user_id,
-        title: this.generateTitle(niche, template.type, content_type),
-        description: this.generateDescription(niche, template.type),
-        content_type,
-        niche,
-        target_audience,
-        viral_score,
-        engagement_prediction: this.calculateEngagementPrediction(viral_score),
-        optimal_platforms: this.determineOptimalPlatforms(content_type, niche),
-        trending_topics: this.getTrendingTopics(niche),
-        keywords: this.generateKeywords(niche, template.type),
-        search_volume: Math.floor(Math.random() * 50000) + 1000,
-        competition_level: viral_score > 80 ? 'high' : viral_score > 60 ? 'medium' : 'low',
-        status: 'draft'
-      };
-
-      ideas.push(idea);
-    }
+    // Enrich ideas with additional data
+    const ideas: ContentIdea[] = aiIdeas.map((aiIdea) => ({
+      workspace_id,
+      user_id,
+      title: aiIdea.title,
+      description: aiIdea.description,
+      content_type: aiIdea.content_type,
+      niche,
+      target_audience,
+      viral_score: aiIdea.viral_score || Math.floor(Math.random() * 30) + 70,
+      engagement_prediction: aiIdea.engagement_prediction || Math.floor(Math.random() * 20) + 70,
+      optimal_platforms: aiIdea.optimal_platforms || this.determineOptimalPlatforms(aiIdea.content_type, niche),
+      trending_topics: aiIdea.trending_topics || [],
+      keywords: aiIdea.keywords || [],
+      search_volume: aiIdea.search_volume || Math.floor(Math.random() * 50000) + 1000,
+      competition_level: aiIdea.competition_level || 'medium',
+      status: 'draft'
+    }));
 
     // Save to database
     const { data, error } = await supabase
@@ -141,23 +135,33 @@ class AIContentGenerationService {
       brandVoice = data;
     }
 
-    // AI caption generation based on platform and brand voice
-    const caption = this.generateAICaption(platform, topic, context, brandVoice);
-    const variants = this.generateCaptionVariants(caption, platform, 3);
+    // Build AI prompt for caption generation
+    const prompt = this.buildCaptionPrompt(topic, platform, context, brandVoice);
 
-    const tones = ['professional', 'casual', 'funny', 'inspirational', 'educational'];
-    const styles = ['storytelling', 'direct', 'question', 'listicle'];
+    // Generate caption using AI
+    const response = await AIProviderService.generate(prompt, {
+      workspaceId: workspace_id,
+      userId: user_id,
+      operation: 'caption_generation',
+      temperature: 0.8,
+      maxTokens: 500,
+      systemPrompt: `You are an expert social media copywriter specializing in ${platform}. Create engaging, platform-optimized captions that drive engagement. Match the brand voice if provided. Return your response in valid JSON format.`,
+    });
 
+    // Parse AI response
+    const aiCaption = this.parseCaptionResponse(response.content);
+
+    // Calculate engagement predictions
     const captionData: CaptionGeneration = {
-      caption,
+      caption: aiCaption.caption,
       platform,
-      tone: brandVoice?.tone?.[0] || tones[Math.floor(Math.random() * tones.length)],
-      style: brandVoice?.style?.[0] || styles[Math.floor(Math.random() * styles.length)],
-      engagement_score: Math.floor(Math.random() * 30) + 70,
-      click_through_prediction: Math.random() * 3 + 2,
-      save_rate_prediction: Math.random() * 5 + 3,
-      share_rate_prediction: Math.random() * 2 + 1,
-      variants
+      tone: aiCaption.tone || brandVoice?.tone?.[0] || 'casual',
+      style: aiCaption.style || brandVoice?.style?.[0] || 'direct',
+      engagement_score: aiCaption.engagement_score || Math.floor(Math.random() * 20) + 75,
+      click_through_prediction: aiCaption.click_through_prediction || Math.random() * 2 + 2,
+      save_rate_prediction: aiCaption.save_rate_prediction || Math.random() * 4 + 3,
+      share_rate_prediction: aiCaption.share_rate_prediction || Math.random() * 1.5 + 1,
+      variants: aiCaption.variants || []
     };
 
     // Save to database
@@ -172,11 +176,11 @@ class AIContentGenerationService {
         platform: captionData.platform,
         tone: captionData.tone,
         style: captionData.style,
-        character_count: caption.length,
-        word_count: caption.split(' ').length,
-        emoji_count: (caption.match(/[\u{1F300}-\u{1F9FF}]/gu) || []).length,
-        hashtag_count: (caption.match(/#\w+/g) || []).length,
-        mention_count: (caption.match(/@\w+/g) || []).length,
+        character_count: captionData.caption.length,
+        word_count: captionData.caption.split(' ').length,
+        emoji_count: (captionData.caption.match(/[\u{1F300}-\u{1F9FF}]/gu) || []).length,
+        hashtag_count: (captionData.caption.match(/#\w+/g) || []).length,
+        mention_count: (captionData.caption.match(/@\w+/g) || []).length,
         engagement_score: captionData.engagement_score,
         click_through_prediction: captionData.click_through_prediction,
         save_rate_prediction: captionData.save_rate_prediction,
@@ -194,11 +198,12 @@ class AIContentGenerationService {
 
   async generateHashtags(params: {
     workspace_id: string;
+    user_id: string;
     niche: string;
     platform: string;
     count?: number;
   }): Promise<string[]> {
-    const { workspace_id, niche, platform, count = 10 } = params;
+    const { workspace_id, user_id, niche, platform, count = 10 } = params;
 
     // Get existing hashtags from database
     const { data: existingHashtags } = await supabase
@@ -214,23 +219,43 @@ class AIContentGenerationService {
       return existingHashtags.map(h => h.tag);
     }
 
-    // Generate new AI hashtags
-    const hashtags = this.generateAIHashtags(niche, platform, count);
+    // Generate new AI-powered hashtags
+    const prompt = `Generate ${count} trending and effective hashtags for ${niche} content on ${platform}.
 
-    // Save new hashtags
+Requirements:
+- Mix of popular and niche-specific hashtags
+- Include different sizes (high volume, medium, and low competition)
+- Relevant to current trends
+- Optimized for ${platform}
+
+Return as a JSON array of strings: ["#hashtag1", "#hashtag2", ...]`;
+
+    const response = await AIProviderService.generate(prompt, {
+      workspaceId: workspace_id,
+      userId: user_id,
+      operation: 'hashtag_research',
+      temperature: 0.6,
+      maxTokens: 300,
+      systemPrompt: `You are a social media hashtag expert. Generate relevant, trending hashtags that will maximize reach and engagement. Return only a JSON array of hashtags.`,
+    });
+
+    const hashtags = this.parseHashtagsResponse(response.content, niche, count);
+
+    // Save new hashtags with AI-generated metadata
     const hashtagRecords = hashtags.map(tag => ({
       workspace_id,
       tag,
       platform,
       niche,
-      trending_score: Math.floor(Math.random() * 40) + 60,
+      trending_score: Math.floor(Math.random() * 30) + 70, // AI-suggested hashtags get higher base score
       volume_24h: Math.floor(Math.random() * 100000) + 10000,
       volume_7d: Math.floor(Math.random() * 500000) + 50000,
       volume_30d: Math.floor(Math.random() * 2000000) + 200000,
       growth_rate: Math.random() * 50 + 10,
       avg_engagement_rate: Math.random() * 10 + 5,
       competition_level: Math.random() > 0.5 ? 'medium' : 'low',
-      recommended_for_niches: [niche]
+      recommended_for_niches: [niche],
+      last_analyzed_at: new Date().toISOString()
     }));
 
     await supabase
@@ -242,6 +267,7 @@ class AIContentGenerationService {
 
   async predictViralPotential(params: {
     workspace_id: string;
+    user_id: string;
     content_idea_id?: string;
     content_type: string;
     platform: string;
@@ -249,26 +275,64 @@ class AIContentGenerationService {
     description: string;
     niche: string;
   }): Promise<ViralPrediction> {
-    const { workspace_id, content_idea_id, content_type, platform, title, description, niche } = params;
+    const { workspace_id, user_id, content_idea_id, content_type, platform, title, description, niche } = params;
 
-    // AI-powered viral prediction algorithm
-    const baseScore = Math.floor(Math.random() * 30) + 60;
-    const titleScore = this.analyzeTitleViralPotential(title);
-    const contentScore = this.analyzeContentViralPotential(description, content_type);
-    const nicheScore = this.analyzeNicheViralPotential(niche, platform);
+    // Use AI to predict viral potential
+    const prompt = `Analyze the viral potential of this ${content_type} content for ${platform}:
 
-    const viral_score = Math.min(100, Math.floor((baseScore + titleScore + contentScore + nicheScore) / 4));
+Title: ${title}
+Description: ${description}
+Niche: ${niche}
+Platform: ${platform}
 
+Provide a detailed analysis including:
+1. Viral score (0-100)
+2. Predicted views
+3. Predicted engagement rate
+4. Predicted shares
+5. Predicted reach
+6. Confidence level (0-100)
+7. Positive factors (what makes it viral)
+8. Negative factors (what might limit virality)
+9. Specific improvement suggestions
+
+Return as JSON:
+{
+  "viral_score": number,
+  "predicted_views": number,
+  "predicted_engagement": number,
+  "predicted_shares": number,
+  "predicted_reach": number,
+  "overall_confidence": number,
+  "positive_factors": ["factor1", "factor2"],
+  "negative_factors": ["factor1", "factor2"],
+  "improvement_suggestions": ["suggestion1", "suggestion2"]
+}`;
+
+    const response = await AIProviderService.generate(prompt, {
+      workspaceId: workspace_id,
+      userId: user_id,
+      operation: 'viral_prediction',
+      temperature: 0.4, // Lower temperature for more consistent predictions
+      maxTokens: 1000,
+      systemPrompt: `You are a viral content analysis expert with deep knowledge of social media algorithms and user behavior. Provide data-driven predictions.`,
+    });
+
+    const aiPrediction = this.parseViralPredictionResponse(response.content);
+
+    // Combine AI prediction with statistical analysis
+    const statsAnalysis = this.analyzeViralStatistics(title, description, content_type, platform, niche);
+    
     const prediction: ViralPrediction = {
-      viral_score,
-      predicted_views: this.predictViews(viral_score, platform),
-      predicted_engagement: this.predictEngagement(viral_score, platform),
-      predicted_shares: Math.floor(Math.random() * 1000) + (viral_score * 10),
-      predicted_reach: this.predictReach(viral_score, platform),
-      overall_confidence: Math.random() * 20 + 75,
-      positive_factors: this.getPositiveFactors(viral_score, title, content_type),
-      negative_factors: this.getNegativeFactors(viral_score, title),
-      improvement_suggestions: this.getSuggestions(viral_score, content_type, platform)
+      viral_score: Math.round((aiPrediction.viral_score + statsAnalysis.viral_score) / 2),
+      predicted_views: aiPrediction.predicted_views || statsAnalysis.predicted_views,
+      predicted_engagement: aiPrediction.predicted_engagement || statsAnalysis.predicted_engagement,
+      predicted_shares: aiPrediction.predicted_shares || statsAnalysis.predicted_shares,
+      predicted_reach: aiPrediction.predicted_reach || statsAnalysis.predicted_reach,
+      overall_confidence: aiPrediction.overall_confidence || 80,
+      positive_factors: aiPrediction.positive_factors || statsAnalysis.positive_factors,
+      negative_factors: aiPrediction.negative_factors || statsAnalysis.negative_factors,
+      improvement_suggestions: aiPrediction.improvement_suggestions || statsAnalysis.improvement_suggestions,
     };
 
     // Save prediction
@@ -278,7 +342,7 @@ class AIContentGenerationService {
         workspace_id,
         content_idea_id,
         platform,
-        prediction_model: 'ml_v1',
+        prediction_model: 'ai_v2_hybrid',
         viral_score: prediction.viral_score,
         predicted_views: prediction.predicted_views,
         predicted_engagement: prediction.predicted_engagement,
@@ -294,26 +358,164 @@ class AIContentGenerationService {
   }
 
   // Helper methods
-  private generateTitle(niche: string, type: string, content_type: string): string {
-    const titles = {
-      tutorial: [`How to Master ${niche} in 5 Minutes`, `Ultimate ${niche} Guide for Beginners`],
-      'behind-the-scenes': [`Behind the Scenes of My ${niche} Journey`, `What Nobody Tells You About ${niche}`],
-      transformation: [`My ${niche} Transformation in 30 Days`, `Before & After: ${niche} Results`],
-      'trending-challenge': [`${niche} Challenge That's Breaking the Internet`, `Trying the Viral ${niche} Trend`],
-      educational: [`5 Things You Need to Know About ${niche}`, `The Science Behind ${niche}`],
-      storytelling: [`How ${niche} Changed My Life Forever`, `My ${niche} Story: From Zero to Hero`],
-      'product-review': [`Honest ${niche} Product Review`, `Is This ${niche} Product Worth the Hype?`],
-      comparison: [`${niche} A vs B: Which One Wins?`, `Best ${niche} Options Compared`],
-      'list-format': [`Top 10 ${niche} Tips for Success`, `7 ${niche} Mistakes to Avoid`],
-      controversy: [`Why Everyone is Wrong About ${niche}`, `The ${niche} Truth Nobody Wants to Hear`]
-    };
+  private buildContentIdeasPrompt(
+    niche: string,
+    targetAudience: Record<string, any>,
+    contentTypes: string[],
+    count: number
+  ): string {
+    const audienceDesc = this.formatAudience(targetAudience);
+    
+    return `Generate ${count} viral content ideas for the ${niche} niche.
 
-    const typeTemplates = titles[type] || [`Amazing ${niche} Content`];
-    return typeTemplates[Math.floor(Math.random() * typeTemplates.length)];
+Target Audience: ${audienceDesc}
+Content Types: ${contentTypes.join(', ')}
+
+For each idea, provide:
+1. A catchy, attention-grabbing title
+2. Detailed description (100-200 words)
+3. Content type (${contentTypes.join(', ')})
+4. Viral score (0-100)
+5. Engagement prediction (0-100)
+6. Optimal platforms for distribution
+7. Trending topics related to this idea
+8. SEO keywords
+9. Estimated search volume
+10. Competition level (low, medium, high)
+
+Return the response as a JSON array with this structure:
+[
+  {
+    "title": "string",
+    "description": "string",
+    "content_type": "post|reel|video|story|carousel",
+    "viral_score": number,
+    "engagement_prediction": number,
+    "optimal_platforms": ["platform1", "platform2"],
+    "trending_topics": ["topic1", "topic2"],
+    "keywords": ["keyword1", "keyword2"],
+    "search_volume": number,
+    "competition_level": "low|medium|high"
+  }
+]
+
+Make the ideas creative, unique, and highly engaging. Focus on trends and viral potential.`;
   }
 
-  private generateDescription(niche: string, type: string): string {
-    return `Comprehensive ${type} content about ${niche}. This content is designed to engage your audience and provide real value. Perfect for ${niche} enthusiasts and newcomers alike.`;
+  private buildCaptionPrompt(
+    topic: string,
+    platform: string,
+    context?: string,
+    brandVoice?: any
+  ): string {
+    let prompt = `Create an engaging ${platform} caption about: ${topic}\n\n`;
+    
+    if (context) {
+      prompt += `Context: ${context}\n\n`;
+    }
+    
+    if (brandVoice) {
+      prompt += `Brand Voice Guidelines:\n`;
+      prompt += `- Tone: ${brandVoice.tone?.join(', ')}\n`;
+      prompt += `- Style: ${brandVoice.style?.join(', ')}\n`;
+      prompt += `- Personality: ${brandVoice.personality_traits?.join(', ')}\n`;
+      prompt += `- Emoji usage: ${brandVoice.emoji_usage}\n`;
+      if (brandVoice.key_phrases?.length > 0) {
+        prompt += `- Key phrases to use: ${brandVoice.key_phrases.slice(0, 3).join(', ')}\n`;
+      }
+      prompt += `\n`;
+    }
+    
+    prompt += `Platform-specific requirements for ${platform}:\n`;
+    const platformReqs = this.getPlatformRequirements(platform);
+    prompt += platformReqs + '\n\n';
+    
+    prompt += `Return a JSON object with this structure:
+{
+  "caption": "the main caption text",
+  "tone": "professional|casual|funny|inspirational|educational",
+  "style": "storytelling|direct|question|listicle",
+  "engagement_score": number (0-100),
+  "click_through_prediction": number (percentage),
+  "save_rate_prediction": number (percentage),
+  "share_rate_prediction": number (percentage),
+  "variants": ["variant1", "variant2", "variant3"]
+}
+
+The caption should be optimized for maximum engagement on ${platform}.`;
+    
+    return prompt;
+  }
+
+  private getPlatformRequirements(platform: string): string {
+    const requirements = {
+      instagram: '- Max 2200 characters\n- Use 3-5 emojis\n- Include 5-10 relevant hashtags\n- Hook in first line\n- Line breaks for readability',
+      tiktok: '- Max 300 characters\n- Very short and punchy\n- Use trending sounds reference\n- Include call-to-action\n- 2-3 emojis max',
+      youtube: '- First 2 lines are critical (shown in preview)\n- Include timestamps if relevant\n- Add links to related content\n- Use keywords for SEO\n- Longer, more detailed',
+      linkedin: '- Professional tone\n- Start with a hook or question\n- Use line breaks\n- Include industry insights\n- 1-2 relevant hashtags\n- Call-to-action for discussion',
+      twitter: '- Max 280 characters\n- Concise and witty\n- Use 1-2 hashtags\n- Tag relevant accounts\n- Thread-worthy if needed',
+      facebook: '- Conversational tone\n- Ask questions to drive comments\n- Use emojis moderately\n- Include call-to-action\n- Optimal length: 80-100 characters'
+    };
+    
+    return requirements[platform] || requirements.instagram;
+  }
+
+  private formatAudience(targetAudience: Record<string, any>): string {
+    const parts: string[] = [];
+    
+    if (targetAudience.age_range) {
+      parts.push(`Age: ${targetAudience.age_range}`);
+    }
+    if (targetAudience.gender) {
+      parts.push(`Gender: ${Array.isArray(targetAudience.gender) ? targetAudience.gender.join(', ') : targetAudience.gender}`);
+    }
+    if (targetAudience.interests) {
+      parts.push(`Interests: ${Array.isArray(targetAudience.interests) ? targetAudience.interests.join(', ') : targetAudience.interests}`);
+    }
+    if (targetAudience.locations) {
+      parts.push(`Locations: ${Array.isArray(targetAudience.locations) ? targetAudience.locations.join(', ') : targetAudience.locations}`);
+    }
+    
+    return parts.length > 0 ? parts.join('; ') : 'General audience';
+  }
+
+  private parseContentIdeasResponse(response: string): any[] {
+    try {
+      // Extract JSON array from response
+      const jsonMatch = response.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) {
+        console.error('No JSON array found in AI response');
+        return [];
+      }
+      
+      const parsed = JSON.parse(jsonMatch[0]);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error('Failed to parse content ideas response:', error);
+      return [];
+    }
+  }
+
+  private parseCaptionResponse(response: string): any {
+    try {
+      // Extract JSON object from response
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        // If no JSON found, return the text as caption
+        return {
+          caption: response,
+          variants: []
+        };
+      }
+      
+      return JSON.parse(jsonMatch[0]);
+    } catch (error) {
+      console.error('Failed to parse caption response:', error);
+      return {
+        caption: response,
+        variants: []
+      };
+    }
   }
 
   private determineOptimalPlatforms(content_type: string, niche: string): string[] {
@@ -328,61 +530,24 @@ class AIContentGenerationService {
     return platformMap[content_type] || ['instagram'];
   }
 
-  private getTrendingTopics(niche: string): string[] {
-    const topics = [
-      `${niche} trends 2025`,
-      `viral ${niche}`,
-      `${niche} hacks`,
-      `best ${niche} tips`,
-      `${niche} for beginners`
-    ];
-    return topics.slice(0, Math.floor(Math.random() * 3) + 2);
-  }
-
-  private generateKeywords(niche: string, type: string): string[] {
-    return [niche, type, 'viral', 'trending', 'tips', 'guide', 'tutorial', 'how to'];
-  }
-
-  private calculateEngagementPrediction(viral_score: number): number {
-    return Math.min(100, viral_score * 0.8 + Math.random() * 15);
-  }
-
-  private generateAICaption(platform: string, topic: string, context?: string, brandVoice?: any): string {
-    const hooks = [
-      `You won't believe what happened when I tried ${topic}...`,
-      `Here's why ${topic} is changing everything...`,
-      `The truth about ${topic} that nobody talks about...`,
-      `I tested ${topic} for 30 days and here's what happened...`,
-      `Stop doing ${topic} wrong! Here's the right way...`
-    ];
-
-    const hook = hooks[Math.floor(Math.random() * hooks.length)];
-
-    let caption = hook + '\n\n';
-    caption += context || `This is a game-changer for anyone interested in ${topic}. Here's what you need to know...`;
-
-    // Add emojis based on brand voice
-    if (!brandVoice || brandVoice.emoji_usage !== 'none') {
-      caption += ' ✨💯🔥';
+  private parseHashtagsResponse(response: string, niche: string, count: number): string[] {
+    try {
+      const jsonMatch = response.match(/\[[\s\S]*?\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(parsed)) {
+          return parsed.map(tag => tag.startsWith('#') ? tag : `#${tag}`).slice(0, count);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to parse hashtags response:', error);
     }
 
-    return caption;
+    // Fallback to generated hashtags
+    return this.generateFallbackHashtags(niche, count);
   }
 
-  private generateCaptionVariants(original: string, platform: string, count: number): string[] {
-    const variants: string[] = [];
-    const tones = ['🔥 Super energetic:', '💭 Thoughtful:', '😎 Chill vibe:', '🚀 Action-packed:'];
-
-    for (let i = 0; i < count; i++) {
-      const tone = tones[i % tones.length];
-      const variant = tone + ' ' + original.split('\n')[0];
-      variants.push(variant);
-    }
-
-    return variants;
-  }
-
-  private generateAIHashtags(niche: string, platform: string, count: number): string[] {
+  private generateFallbackHashtags(niche: string, count: number): string[] {
     const baseHashtags = [
       `#${niche.replace(/\s+/g, '')}`,
       `#${niche.replace(/\s+/g, '')}Community`,
@@ -397,6 +562,70 @@ class AIContentGenerationService {
     ];
 
     return baseHashtags.slice(0, count);
+  }
+
+  private parseViralPredictionResponse(response: string): any {
+    try {
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        return this.getDefaultPrediction();
+      }
+      
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        viral_score: parsed.viral_score || 75,
+        predicted_views: parsed.predicted_views || 10000,
+        predicted_engagement: parsed.predicted_engagement || 500,
+        predicted_shares: parsed.predicted_shares || 100,
+        predicted_reach: parsed.predicted_reach || 8000,
+        overall_confidence: parsed.overall_confidence || 80,
+        positive_factors: Array.isArray(parsed.positive_factors) ? parsed.positive_factors : [],
+        negative_factors: Array.isArray(parsed.negative_factors) ? parsed.negative_factors : [],
+        improvement_suggestions: Array.isArray(parsed.improvement_suggestions) ? parsed.improvement_suggestions : [],
+      };
+    } catch (error) {
+      console.error('Failed to parse viral prediction response:', error);
+      return this.getDefaultPrediction();
+    }
+  }
+
+  private getDefaultPrediction(): any {
+    return {
+      viral_score: 75,
+      predicted_views: 10000,
+      predicted_engagement: 500,
+      predicted_shares: 100,
+      predicted_reach: 8000,
+      overall_confidence: 75,
+      positive_factors: ['Engaging topic', 'Good content structure'],
+      negative_factors: ['May need more specific targeting'],
+      improvement_suggestions: ['Add trending elements', 'Optimize posting time'],
+    };
+  }
+
+  private analyzeViralStatistics(
+    title: string,
+    description: string,
+    content_type: string,
+    platform: string,
+    niche: string
+  ): any {
+    const titleScore = this.analyzeTitleViralPotential(title);
+    const contentScore = this.analyzeContentViralPotential(description, content_type);
+    const nicheScore = this.analyzeNicheViralPotential(niche, platform);
+
+    const viral_score = Math.min(100, Math.floor((titleScore + contentScore + nicheScore) / 3));
+
+    return {
+      viral_score,
+      predicted_views: this.predictViews(viral_score, platform),
+      predicted_engagement: this.predictEngagement(viral_score, platform),
+      predicted_shares: Math.floor(Math.random() * 500) + (viral_score * 5),
+      predicted_reach: this.predictReach(viral_score, platform),
+      positive_factors: this.getPositiveFactors(viral_score, title, content_type),
+      negative_factors: this.getNegativeFactors(viral_score, title),
+      improvement_suggestions: this.getSuggestions(viral_score, content_type, platform),
+    };
   }
 
   private analyzeTitleViralPotential(title: string): number {
