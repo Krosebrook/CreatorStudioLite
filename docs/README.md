@@ -2,6 +2,25 @@
 
 Welcome to the Amplify Creator Platform documentation. This directory contains comprehensive guides, strategic analyses, and technical documentation.
 
+## 🎯 Quick Links by Role
+
+### 👨‍💻 **I'm a Developer**
+Start here: [Development Guide](./DEVELOPMENT.md) → [Architecture](./ARCHITECTURE.md) → [API Reference](./API_REFERENCE.md)
+
+### 🎨 **I'm a Designer**
+Start here: [Components](./COMPONENTS.md) → [Strategic Analysis](./STRATEGIC_FEATURE_ANALYSIS.md)
+
+### 📊 **I'm a Product Manager**
+Start here: [Feature Recommendation](./FEATURE_RECOMMENDATION_QUICK_REF.md) → [Strategic Analysis](./STRATEGIC_FEATURE_ANALYSIS.md)
+
+### 🏗️ **I'm a System Architect**
+Start here: [Architecture](./ARCHITECTURE.md) → [API Reference](./API_REFERENCE.md)
+
+### 🚀 **I'm New to the Project**
+Start here: [Main README](../README.md) → [Development Guide](./DEVELOPMENT.md) → [Architecture](./ARCHITECTURE.md)
+
+---
+
 ## 📚 Documentation Categories
 
 ### 🎯 Strategic & Planning Documents
@@ -38,6 +57,78 @@ Welcome to the Amplify Creator Platform documentation. This directory contains c
 - Risk management
 
 **Best For**: Engineering leads, project managers
+
+---
+
+### 🏗️ Technical Documentation
+
+#### **[Architecture Documentation](./ARCHITECTURE.md)** ⭐ NEW
+**Comprehensive system architecture and design patterns**
+- System architecture overview with diagrams
+- Frontend and backend architecture details
+- Data flow documentation
+- Key design patterns (Singleton, Repository, Result, Factory, Observer)
+- Service layer organization
+- Security architecture
+- Scalability considerations
+- Technology stack breakdown
+- Future architecture planning
+
+**Best For**: Engineers, architects, technical leads  
+**Time to Read**: 30 minutes  
+**Level**: Intermediate to Advanced
+
+---
+
+#### **[Component Documentation](./COMPONENTS.md)** ⭐ NEW
+**Complete guide to React components and UI patterns**
+- Component structure and organization
+- Design system components (atoms, molecules, organisms)
+- Feature-specific components with examples
+- Layout components documentation
+- Component best practices and patterns
+- TypeScript prop interfaces with descriptions
+- Real-world usage examples
+- Form patterns and state management
+
+**Best For**: Frontend developers, UI engineers  
+**Time to Read**: 25 minutes  
+**Level**: Beginner to Intermediate
+
+---
+
+#### **[Development Guide](./DEVELOPMENT.md)** ⭐ NEW
+**Practical guide for day-to-day development**
+- Getting started and initial setup
+- Development environment configuration
+- Project structure explained in detail
+- Coding standards and conventions
+- Common development tasks (pages, API endpoints, services, database tables)
+- Testing strategies and examples
+- Debugging techniques
+- Performance optimization tips
+- Comprehensive troubleshooting guide
+
+**Best For**: All developers, especially new team members  
+**Time to Read**: 30 minutes  
+**Level**: Beginner to Intermediate
+
+---
+
+#### **[Internal API Reference](./API_REFERENCE.md)** ⭐ NEW
+**Quick reference for internal API structure**
+- API client layer documentation
+- Service layer reference guide
+- Type system overview
+- Error handling patterns
+- Best practices and conventions
+- Query patterns
+- 30+ usage examples
+- Code snippets for common operations
+
+**Best For**: Backend developers, integration engineers  
+**Time to Read**: 20 minutes  
+**Level**: Intermediate
 
 ---
 
@@ -165,26 +256,43 @@ Based on comprehensive market research and strategic analysis, we recommend impl
 3. Study market trends and positioning
 
 ### If you're an **Engineering Lead**:
-1. Review [Next Features Roadmap](./NEXT_FEATURES_ROADMAP.md) (20 min)
-2. Check technical implementation details
-3. Review database schemas and service architecture
+1. Review [Architecture Documentation](./ARCHITECTURE.md) (30 min)
+2. Read [Next Features Roadmap](./NEXT_FEATURES_ROADMAP.md) (20 min)
+3. Check [Development Guide](./DEVELOPMENT.md) for standards
+4. Review database schemas and service architecture
 
 ### If you're a **Designer**:
-1. Review feature requirements in [Roadmap](./NEXT_FEATURES_ROADMAP.md)
-2. Check user personas in [Strategic Analysis](./STRATEGIC_FEATURE_ANALYSIS.md)
-3. Study use cases and user flows
+1. Study [Component Documentation](./COMPONENTS.md) for UI patterns
+2. Review feature requirements in [Roadmap](./NEXT_FEATURES_ROADMAP.md)
+3. Check user personas in [Strategic Analysis](./STRATEGIC_FEATURE_ANALYSIS.md)
+4. Study use cases and user flows
+
+### If you're a **New Developer**:
+1. Start with [Development Guide](./DEVELOPMENT.md) (30 min)
+2. Review [Architecture Documentation](./ARCHITECTURE.md) (30 min)
+3. Check [Component Documentation](./COMPONENTS.md) (20 min)
+4. Set up your development environment
+5. Build your first feature
 
 ---
 
 ## 🔗 Additional Resources
 
-### External Documentation
+### Technical Documentation
+- [Architecture](./ARCHITECTURE.md) - System architecture and design
+- [Components](./COMPONENTS.md) - Component library documentation
+- [Development Guide](./DEVELOPMENT.md) - Development practices and workflows
+- [API Documentation](../API.md) - REST API reference
+
+### Project Documentation
 - [Main README](../README.md) - Project overview and setup
-- [DEPLOYMENT.md](../DEPLOYMENT.md) - Deployment guides
-- [SECURITY.md](../SECURITY.md) - Security policy
-- [PRODUCTION_CHECKLIST.md](../PRODUCTION_CHECKLIST.md) - Pre-launch checklist
-- [API.md](../API.md) - API documentation
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
+- [Contributing Guide](../CONTRIBUTING.md) - How to contribute
+- [Security Policy](../SECURITY.md) - Security guidelines
+
+### Operations Documentation
+- [Deployment Guide](../DEPLOYMENT.md) - Deployment procedures
+- [Production Checklist](../PRODUCTION_CHECKLIST.md) - Pre-launch checklist
+- [Monitoring Guide](../MONITORING.md) - System monitoring
 
 ### Related Files
 - [CHANGELOG.md](../CHANGELOG.md) - Version history

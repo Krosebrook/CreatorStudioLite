@@ -4,6 +4,33 @@ import { ConnectorCredentials } from '../connectors/base/BaseConnector';
 import { YouTubeConnector, TikTokConnector, InstagramConnector, LinkedInConnector, PinterestConnector } from '../connectors/social';
 import { connectorRegistry } from '../connectors/base/ConnectorRegistry';
 
+/**
+ * ConnectorService manages social media platform connections and credentials.
+ * 
+ * This service handles OAuth credentials storage, retrieval, and lifecycle management
+ * for various social media platforms. It implements a singleton pattern to ensure
+ * consistent credential handling across the application.
+ * 
+ * Supported platforms:
+ * - YouTube
+ * - TikTok
+ * - Instagram
+ * - LinkedIn
+ * - Pinterest
+ * 
+ * @example
+ * ```typescript
+ * const service = ConnectorService.getInstance();
+ * await service.saveConnectorCredentials(userId, workspaceId, 'instagram', {
+ *   accessToken: 'token123',
+ *   refreshToken: 'refresh456',
+ *   expiresAt: new Date('2025-12-31')
+ * });
+ * ```
+ * 
+ * @class
+ * @since 1.0.0
+ */
 export class ConnectorService {
   private static instance: ConnectorService;
 
@@ -11,6 +38,11 @@ export class ConnectorService {
     this.registerConnectors();
   }
 
+  /**
+   * Returns the singleton instance of ConnectorService.
+   * 
+   * @returns The ConnectorService instance
+   */
   static getInstance(): ConnectorService {
     if (!ConnectorService.instance) {
       ConnectorService.instance = new ConnectorService();
@@ -18,6 +50,12 @@ export class ConnectorService {
     return ConnectorService.instance;
   }
 
+  /**
+   * Registers all supported social media connectors with the connector registry.
+   * Called automatically during service initialization.
+   * 
+   * @private
+   */
   private registerConnectors(): void {
     connectorRegistry.register('youtube', YouTubeConnector as any);
     connectorRegistry.register('tiktok', TikTokConnector as any);
@@ -26,6 +64,45 @@ export class ConnectorService {
     connectorRegistry.register('pinterest', PinterestConnector as any);
   }
 
+  /**
+   * Saves or updates OAuth credentials for a social media platform connection.
+   * 
+   * This method stores encrypted credentials in the database with upsert logic,
+   * meaning it will create a new record or update an existing one if a connection
+   * for the same workspace/platform/user combination already exists.
+   * 
+   * @param userId - The ID of the user who owns the connection
+   * @param workspaceId - The workspace ID where the connector belongs
+   * @param platform - The social media platform identifier (e.g., 'instagram', 'youtube')
+   * @param credentials - OAuth credentials and metadata
+   * @param credentials.accessToken - OAuth access token
+   * @param [credentials.refreshToken] - Optional OAuth refresh token
+   * @param [credentials.expiresAt] - Token expiration date
+   * @param [credentials.platformUserId] - Platform-specific user identifier
+   * @param [credentials.metadata] - Additional platform-specific data
+   * 
+   * @returns Promise resolving to an object with error (null if successful)
+   * 
+   * @example
+   * ```typescript
+   * const result = await connectorService.saveConnectorCredentials(
+   *   'user-123',
+   *   'workspace-456',
+   *   'instagram',
+   *   {
+   *     accessToken: 'IGQVJXa...',
+   *     refreshToken: 'IGQVJXb...',
+   *     expiresAt: new Date('2025-12-31'),
+   *     platformUserId: '17841400123456789',
+   *     metadata: { accountName: '@myaccount' }
+   *   }
+   * );
+   * 
+   * if (result.error) {
+   *   console.error('Failed to save credentials:', result.error);
+   * }
+   * ```
+   */
   async saveConnectorCredentials(
     userId: string,
     workspaceId: string,
@@ -73,6 +150,37 @@ export class ConnectorService {
     }
   }
 
+  /**
+   * Retrieves OAuth credentials for a connected social media platform.
+   * 
+   * Fetches the stored credentials for an active platform connection. Only returns
+   * credentials for connections with status 'connected'. Returns null if no active
+   * connection exists.
+   * 
+   * @param userId - The ID of the user who owns the connection (currently unused but kept for future use)
+   * @param workspaceId - The workspace ID to query
+   * @param platform - The social media platform identifier
+   * 
+   * @returns Promise resolving to credentials and error status
+   * 
+   * @example
+   * ```typescript
+   * const { credentials, error } = await connectorService.getConnectorCredentials(
+   *   'user-123',
+   *   'workspace-456',
+   *   'instagram'
+   * );
+   * 
+   * if (error) {
+   *   console.error('Failed to fetch credentials:', error);
+   * } else if (credentials) {
+   *   // Use credentials for API calls
+   *   console.log('Access token:', credentials.accessToken);
+   * } else {
+   *   console.log('No active connection found');
+   * }
+   * ```
+   */
   async getConnectorCredentials(
     userId: string,
     workspaceId: string,
@@ -116,6 +224,32 @@ export class ConnectorService {
     }
   }
 
+  /**
+   * Disconnects a social media platform by marking it as disconnected.
+   * 
+   * This method doesn't delete the credentials but sets the status to 'disconnected',
+   * allowing for reconnection without re-authorization if desired. The credentials
+   * remain in the database but won't be returned by getConnectorCredentials.
+   * 
+   * @param workspaceId - The workspace ID containing the connector
+   * @param platform - The platform identifier to disconnect
+   * 
+   * @returns Promise resolving to error status (null if successful)
+   * 
+   * @example
+   * ```typescript
+   * const result = await connectorService.disconnectConnector(
+   *   'workspace-456',
+   *   'instagram'
+   * );
+   * 
+   * if (result.error) {
+   *   console.error('Failed to disconnect:', result.error);
+   * } else {
+   *   console.log('Successfully disconnected from Instagram');
+   * }
+   * ```
+   */
   async disconnectConnector(
     workspaceId: string,
     platform: string
@@ -144,6 +278,32 @@ export class ConnectorService {
     }
   }
 
+  /**
+   * Lists all connectors for a workspace, regardless of status.
+   * 
+   * Returns a list of all platform connections associated with a workspace,
+   * including both active and disconnected connectors. Results are ordered
+   * by creation date (newest first).
+   * 
+   * @param workspaceId - The workspace ID to query
+   * 
+   * @returns Promise resolving to an array of connectors and error status
+   * 
+   * @example
+   * ```typescript
+   * const { connectors, error } = await connectorService.listWorkspaceConnectors(
+   *   'workspace-456'
+   * );
+   * 
+   * if (error) {
+   *   console.error('Failed to list connectors:', error);
+   * } else {
+   *   connectors.forEach(connector => {
+   *     console.log(`${connector.platform}: ${connector.status}`);
+   *   });
+   * }
+   * ```
+   */
   async listWorkspaceConnectors(workspaceId: string): Promise<{
     connectors: Array<{
       id: string;
