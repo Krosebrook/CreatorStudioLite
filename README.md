@@ -95,11 +95,42 @@ Run health checks:
 npm run health-check
 ```
 
+## 📚 Documentation
+
+Comprehensive documentation is available in the `/docs` directory:
+
+### 📖 For Users & Product Teams
+- **[Quick Feature Recommendation](./docs/FEATURE_RECOMMENDATION_QUICK_REF.md)** - Next features to build (2-page summary)
+- **[Strategic Analysis](./docs/STRATEGIC_FEATURE_ANALYSIS.md)** - Comprehensive market analysis and planning
+- **[Roadmap](./docs/NEXT_FEATURES_ROADMAP.md)** - Implementation roadmap and timeline
+
+### 🔧 For Developers
+- **[Architecture Documentation](./docs/ARCHITECTURE.md)** - System architecture and design patterns
+- **[Component Documentation](./docs/COMPONENTS.md)** - UI component library guide
+- **[Development Guide](./docs/DEVELOPMENT.md)** - Getting started and best practices
+- **[API Reference](./API.md)** - Complete API documentation
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute
+
+### 🚀 For DevOps
+- **[Deployment Guide](./DEPLOYMENT.md)** - Deploy to various platforms
+- **[Monitoring Guide](./MONITORING.md)** - Set up observability
+- **[Production Checklist](./PRODUCTION_CHECKLIST.md)** - Pre-launch verification
+
+### 🔒 For Security
+- **[Security Policy](./SECURITY.md)** - Security guidelines and vulnerability reporting
+
+📋 **[Full Documentation Index](./docs/README.md)** - Complete list of all documentation
+
 ## 📚 Project Structure
 
 ```
 CreatorStudioLite/
 ├── api/                    # API endpoints (auth, webhooks)
+├── docs/                   # 📖 Documentation
+│   ├── ARCHITECTURE.md    # System architecture
+│   ├── COMPONENTS.md      # Component library
+│   ├── DEVELOPMENT.md     # Development guide
+│   └── README.md          # Documentation index
 ├── scripts/                # Utility scripts (health checks, smoke tests)
 ├── src/
 │   ├── components/         # React components
@@ -137,7 +168,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **Documentation**: Check the `/docs` directory for detailed guides
+- **Documentation**: Check the comprehensive guides in `/docs` directory
+  - [Architecture](./docs/ARCHITECTURE.md) - System design and patterns
+  - [Components](./docs/COMPONENTS.md) - UI component guide
+  - [Development](./docs/DEVELOPMENT.md) - Getting started
 - **Product Roadmap**: See [Feature Recommendation](./docs/FEATURE_RECOMMENDATION_QUICK_REF.md) for next planned features
 - **Issues**: Report bugs via [GitHub Issues](https://github.com/Krosebrook/CreatorStudioLite/issues)
 - **Discussions**: Join conversations in [GitHub Discussions](https://github.com/Krosebrook/CreatorStudioLite/discussions)
