@@ -99,6 +99,9 @@ npm run health-check
 
 Comprehensive documentation is available in the `/docs` directory:
 
+⚠️ **[Documentation Audit Report](./DOCUMENTATION_AUDIT_REPORT.md)** - Production-readiness audit (January 2026)  
+📊 **[Audit Implementation Summary](./DOCUMENTATION_AUDIT_IMPLEMENTATION_SUMMARY.md)** - Quick overview and next steps
+
 ### 📖 For Users & Product Teams
 - **[Quick Feature Recommendation](./docs/FEATURE_RECOMMENDATION_QUICK_REF.md)** - Next features to build (2-page summary)
 - **[Strategic Analysis](./docs/STRATEGIC_FEATURE_ANALYSIS.md)** - Comprehensive market analysis and planning
@@ -109,17 +112,40 @@ Comprehensive documentation is available in the `/docs` directory:
 - **[Component Documentation](./docs/COMPONENTS.md)** - UI component library guide
 - **[Development Guide](./docs/DEVELOPMENT.md)** - Getting started and best practices
 - **[API Reference](./API.md)** - Complete API documentation
+- **[API Error Codes](./API_ERROR_CODES.md)** - Error handling guide [Placeholder]
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute
+- **[Troubleshooting](./TROUBLESHOOTING.md)** - Common issues and solutions [Placeholder]
+- **[RBAC Guide](./docs/RBAC_GUIDE.md)** - Roles and permissions [Placeholder]
+- **[Connector Guide](./docs/CONNECTOR_GUIDE.md)** - Platform integration [Placeholder]
 
-### 🚀 For DevOps
-- **[Deployment Guide](./DEPLOYMENT.md)** - Deploy to various platforms
-- **[Monitoring Guide](./MONITORING.md)** - Set up observability
+### 🚀 For DevOps & Operations
+- **[Deployment Guide](./DEPLOYMENT.md)** - Deploy to various platforms [Incomplete]
+- **[Monitoring Guide](./MONITORING.md)** - Set up observability [Incomplete]
 - **[Production Checklist](./PRODUCTION_CHECKLIST.md)** - Pre-launch verification
+- **[Disaster Recovery](./DISASTER_RECOVERY.md)** - Backup and recovery [Placeholder] ⚠️
+- **[Incident Response](./INCIDENT_RESPONSE.md)** - On-call procedures [Placeholder] ⚠️
+- **[Runbook](./RUNBOOK.md)** - Production troubleshooting [Placeholder] ⚠️
+- **[Scaling Guide](./SCALING_GUIDE.md)** - Horizontal scaling [Placeholder]
 
-### 🔒 For Security
+### 🔒 For Security & Compliance
 - **[Security Policy](./SECURITY.md)** - Security guidelines and vulnerability reporting
+- **[Security Threat Model](./SECURITY_THREAT_MODEL.md)** - Attack vectors and mitigations [Placeholder] ⚠️
+- **[Penetration Testing Guide](./PENETRATION_TESTING_GUIDE.md)** - Security testing [Placeholder]
+- **[Data Protection & Compliance](./DATA_PROTECTION_COMPLIANCE.md)** - GDPR compliance [Placeholder] ⚠️
+
+### 💾 For Database & Data
+- **[Database Schema](./DATABASE_SCHEMA.md)** - Complete schema documentation [Placeholder] ⚠️
+- **[Migration Guide](./MIGRATION_GUIDE.md)** - Database migrations [Placeholder] ⚠️
+- **[Data Dictionary](./DATA_DICTIONARY.md)** - Field definitions [Placeholder]
+
+### 🧪 For Testing & QA
+- **[Testing Strategy](./TESTING_STRATEGY.md)** - Testing standards [Placeholder]
+- **[Test Writing Guide](./TEST_WRITING_GUIDE.md)** - How to write tests [Placeholder]
+- **[E2E Testing](./E2E_TESTING.md)** - End-to-end testing [Placeholder]
 
 📋 **[Full Documentation Index](./docs/README.md)** - Complete list of all documentation
+
+⚠️ **Note:** Documents marked with [Placeholder] require content creation. Documents marked with ⚠️ are critical for production launch.
 
 ## 📚 Project Structure
 
